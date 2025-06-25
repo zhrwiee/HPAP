@@ -8,7 +8,7 @@ const AppContextProvider = (props) => {
   const url ="https://hpap-backend.onrender.com"; 
   const currencySymbol = '$';
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const url ="https://hpap-backend.onrender.com"; 
+  // const url ="https://hpap-backend.onrender.com"; 
   const [doctors, setDoctors] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [HealthRecords, setHealthRecords] = useState([]);
@@ -154,7 +154,7 @@ const deleteHealthRecord = async (recordId) => {
     checkSlotAvailability,
     getDepartmentsData,
     currencySymbol,
-    backendUrl,
+    url,
     token,
     createHealthRecord,
     getHealthRecords,
