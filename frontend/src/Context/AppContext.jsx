@@ -8,7 +8,7 @@ const AppContextProvider = (props) => {
   const url ="https://hpap-backend.onrender.com"; 
   const currencySymbol = '$';
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
+  const url ="https://hpap-backend.onrender.com"; 
   const [doctors, setDoctors] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [HealthRecords, setHealthRecords] = useState([]);
@@ -18,7 +18,7 @@ const AppContextProvider = (props) => {
   // Fetch doctors
   const getDoctorsData = async () => {
     try {
-      const { data } = await axios.get(`${backendUrl}/api/doctor/list`);
+      const { data } = await axios.get(`${url}/api/doctor/list`);
       if (data.success) {
         setDoctors(data.doctors);
       } else {
@@ -33,7 +33,7 @@ const AppContextProvider = (props) => {
   // Check slot availability (reusable function)
   const checkSlotAvailability = async (department, date) => {
     try {
-      const { data } = await axios.get(`${backendUrl}/api/user/check-slot`, {
+      const { data } = await axios.get(`${url}/api/user/check-slot`, {
         params: { department, date },
       });
       return data; // { success, unavailable }
@@ -47,7 +47,7 @@ const AppContextProvider = (props) => {
     // Create a new health record
   const createHealthRecord = async (recordData) => {
     try {
-      const { data } = await axios.post(`${backendUrl}/api/user/health-record`, recordData, {
+      const { data } = await axios.post(`${url}/api/user/health-record`, recordData, {
         headers: { token }
       });
       if (data.success) {
@@ -67,7 +67,7 @@ const AppContextProvider = (props) => {
   // Get user's health records
   const getHealthRecords = async () => {
     try {
-      const { data } = await axios.get(`${backendUrl}/api/user/health-records`, {
+      const { data } = await axios.get(`${url}/api/user/health-records`, {
         headers: { token }
       });
       if (data.success) {
@@ -86,7 +86,7 @@ const AppContextProvider = (props) => {
   // Delete health record by ID
 const deleteHealthRecord = async (recordId) => {
   try {
-    const { data } = await axios.delete(`${backendUrl}/api/user/health-record/${recordId}`, {
+    const { data } = await axios.delete(`${url}/api/user/health-record/${recordId}`, {
       headers: { token }
     });
     if (data.success) {
@@ -106,7 +106,7 @@ const deleteHealthRecord = async (recordId) => {
   // Fetch departments
   const getDepartmentsData = async () => {
     try {
-      const { data } = await axios.get(`${backendUrl}/api/user/departments`);
+      const { data } = await axios.get(`${url}/api/user/departments`);
       if (data.success) {
         setDepartments(data.departments);
       } else {
@@ -121,7 +121,7 @@ const deleteHealthRecord = async (recordId) => {
   // Fetch user profile
   const loadUserProfileData = async () => {
     try {
-      const { data } = await axios.get(`${backendUrl}/api/user/get-profile`, {
+      const { data } = await axios.get(`${url}/api/user/get-profile`, {
         headers: { token },
       });
 
