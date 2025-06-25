@@ -11,9 +11,10 @@ const Login = () => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+    const backendUrl = import.meta.env.VITE_BACKEND_URL
 
   const navigate = useNavigate()
-  const { backendUrl, token, setToken } = useContext(AppContext)
+  const {  token, setToken } = useContext(AppContext)
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();

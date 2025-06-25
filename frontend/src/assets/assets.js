@@ -37,7 +37,7 @@ import Gynecologist from './Gynecologist.svg'
 import Neurologist from './Neurologist.svg'
 import Pediatricians from './Pediatricians.svg'
 
-
+export const url="https://hpap-backend.onrender.com"
 export const assets = {
     appointment_img,
     header_img,
