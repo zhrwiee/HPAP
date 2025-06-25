@@ -5,6 +5,7 @@ import axios from 'axios';
 export const AppContext = createContext();
 
 const AppContextProvider = (props) => {
+  const url ="https://hpap-backend.onrender.com"; 
   const currencySymbol = '$';
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
