@@ -8,6 +8,7 @@ const AppContextProvider = (props) => {
   const currencySymbol = '$';
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   // const url = "https://hpap-backend.onrender.com";
+  //ss
   const url = backendUrl;
 
   const [doctors, setDoctors] = useState([]);
