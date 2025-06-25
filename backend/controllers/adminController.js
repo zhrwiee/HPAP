@@ -8,6 +8,7 @@ import { v2 as cloudinary } from "cloudinary";
 import userModel from "../models/userModel.js";
 
 // API for admin login
+const admin_URL = "https://hpap-backend.onrender.com/api/admin/login";
 const loginAdmin = async (req, res) => {
     try {
 

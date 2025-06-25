@@ -13,6 +13,7 @@ import razorpay from 'razorpay';
 
 // Gateway Initialize
 const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY)
+const user_URL = "https://hpap-backend.onrender.com/api/user/login";
 const razorpayInstance = new razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,

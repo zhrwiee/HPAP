@@ -5,6 +5,8 @@ import appointmentModel from "../models/appointmentModel.js";
 import HealthRecordModel from "../models/healthRecordsModel.js";
 
 // API for doctor Login 
+const doctor_URL = "https://hpap-backend.onrender.com/api/doctor/login";
+
 const loginDoctor = async (req, res) => {
 
     try {
