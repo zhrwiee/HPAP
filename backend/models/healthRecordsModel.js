@@ -1,12 +1,14 @@
 import mongoose from "mongoose";
 
 const healthRecordSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true },
+  // userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
+  doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor', required: false }, // optional
   date: { type: Date, required: true },
-  weight: { type: Number },          // in kg
-  height: { type: Number },          // in cm
-  bloodPressure: { type: String },   // e.g. "120/80"
-  heartRate: { type: Number },       // in bpm
+  weight: { type: Number },
+  height: { type: Number },
+  bloodPressure: { type: String },
+  heartRate: { type: Number },
   diagnosis: { type: String },
   notes: { type: String },
 }, { timestamps: true });

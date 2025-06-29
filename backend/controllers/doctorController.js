@@ -3,21 +3,18 @@ import bcrypt from "bcrypt";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import HealthRecordModel from "../models/healthRecordsModel.js";;
+import UserModel from "../models/userModel.js"; 
 // API for doctor Login 
 const doctor_URL = "https://hpap-backend.onrender.com/api/doctor/login";
 
-const getAllHealthRecords  = async (req, res) => {
+const getAllHealthRecords = async (req, res) => {
   try {
-    const doctorId = req.userId;
-
-    const appointments = await appointmentModel.find({ docId: doctorId, isCompleted: true });
-
-    const userIds = [...new Set(appointments.map(a => a.userId))];
-
-    const records = await HealthRecordModel.find({ userId: { $in: userIds } }).populate('userId');
+    const records = await HealthRecordModel.find()
+      .populate('userId', 'name gender'); // Only pull name from user
 
     res.json({ success: true, records });
   } catch (error) {
+    console.error('Health Record Fetch Error:', error); // Look here in Render logs!
     res.status(500).json({ success: false, message: error.message });
   }
 };

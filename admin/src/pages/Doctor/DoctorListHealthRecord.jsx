@@ -1,38 +1,34 @@
-import { useEffect, useState, useContext } from 'react';
-import axios from 'axios';
+import React, { useContext, useEffect, useState } from 'react';
 import { DoctorContext } from '../../context/DoctorContext';
 import { toast } from 'react-toastify';
 
 const DoctorListHealthRecord = () => {
   const [records, setRecords] = useState([]);
-  const { dToken, backendUrl } = useContext(DoctorContext);
+  const { dToken, getAllHealthRecords } = useContext(DoctorContext);
 
   useEffect(() => {
     const fetchRecords = async () => {
       try {
-        const res = await axios.get(`${backendUrl}/api/doctor/health-records`, {
-          headers: { dToken },
-        });
+        const data = await getAllHealthRecords();
 
-        if (res.data.success) {
-          setRecords(res.data.records);
+        if (data?.success) {
+          setRecords(data.records || []);
         } else {
-          toast.error(res.data.message);
+          toast.error(data?.message || 'Failed to fetch health records');
         }
       } catch (err) {
-        console.error("Failed to fetch health records", err);
-        toast.error("Failed to load health records");
+        console.error('Fetch Error:', err);
+        toast.error('Failed to load health records');
       }
     };
 
-    if (dToken) {
-      fetchRecords();
-    }
-  }, [dToken, backendUrl]);
+    if (dToken) fetchRecords();
+  }, [dToken]);
 
   return (
     <div className='p-4'>
       <h2 className='text-xl font-semibold mb-4'>Health Records</h2>
+
       {records.length === 0 ? (
         <p>No records found.</p>
       ) : (
