@@ -6,7 +6,8 @@ import upload from '../middleware/multer.js';
 const adminRouter = express.Router();
 
 adminRouter.post("/login", loginAdmin)
-adminRouter.get("/update-department", upload.single('image'), authAdmin, updateDepartment)
+// adminRouter.get("/update-department", upload.single('image'), authAdmin, updateDepartment)
+adminRouter.post("/update-department/:id", upload.single('image'), authAdmin, updateDepartment)
 adminRouter.post("/add-doctor", authAdmin, upload.single('image'), addDoctor)
 adminRouter.get("/all-departments", authAdmin, allDepartments)
 adminRouter.post('/add-department', authAdmin, upload.single('image'), addDepartment)

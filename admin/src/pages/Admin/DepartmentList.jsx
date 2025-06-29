@@ -42,12 +42,13 @@ const DepartmentList = () => {
         formData.append('image', editForm.image);
       }
 
-      await axios.post(`${backendUrl}/api/admin/update-department/${id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          token: aToken,
-        },
-      });
+        await axios.post(`${backendUrl}/api/admin/update-department/${id}`, formData, {
+          headers: {
+            token: aToken, // ✅ DO NOT manually set Content-Type
+          },
+        });
+
+
 
       toast.success('Department updated');
       setEditId(null);

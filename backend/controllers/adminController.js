@@ -66,22 +66,20 @@ const updateDepartment = async (req, res) => {
     const imageFile = req.file;
 
     if (!departmentname) {
-      return res.json({ success: false, message: 'Department name is required' });
+      return res.status(400).json({ success: false, message: 'Department name is required' });
     }
 
     const updateData = { departmentname };
 
     if (imageFile) {
       const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
-        resource_type: 'image'
+        resource_type: 'image',
       });
       updateData.image = imageUpload.secure_url;
     }
 
     await departmentModel.findByIdAndUpdate(id, updateData);
-
     res.json({ success: true, message: 'Department updated' });
-
   } catch (error) {
     console.error('Update department error:', error);
     res.status(500).json({ success: false, message: error.message });
