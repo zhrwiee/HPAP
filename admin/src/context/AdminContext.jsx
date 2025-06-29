@@ -36,12 +36,12 @@ const AdminContextProvider = (props) => {
     }
 
 
-const getAllPatients = async () => {
-  const res = await axios.get("/api/admin/all-patients", {
-    headers: { Authorization: aToken }
-  });
-  if (res.data.success) setPatients(res.data.data);
-};
+    const getAllPatients = async () => {
+    const res = await axios.get(`${backendUrl}/api/admin/get-all-patients`, {
+        headers: { aToken }
+    });
+    if (res.data.success) setPatients(res.data.data);
+    };
 
     const getAllDepartments = async () => {
         try {
@@ -130,12 +130,22 @@ const getAllPatients = async () => {
     headers: { aToken },
   });
 };
-        const deletePatient = async (id) => {
-        await axios.delete(`/api/admin/delete-patient/${id}`, {
-            headers: { Authorization: aToken }
-        });
-        };
+       const deletePatient = async (id) => {
+  try {
+    const { data } = await axios.delete(`${backendUrl}/api/admin/delete-patient/${id}`, {
+      headers: { aToken },
+    });
 
+    if (data.success) {
+      toast.success("Patient deleted successfully");
+      getAllPatients(); // refresh list
+    } else {
+      toast.error(data.message || "Failed to delete patient");
+    }
+  } catch (error) {
+    toast.error(error.message || "Something went wrong");
+  }
+};
 
 
     // Getting Admin Dashboard data from Database using API

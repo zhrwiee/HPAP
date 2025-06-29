@@ -3,9 +3,30 @@ import bcrypt from "bcrypt";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import HealthRecordModel from "../models/healthRecordsModel.js";
-
+import userModel from "../models/userModel.js";
 // API for doctor Login 
 const doctor_URL = "https://hpap-backend.onrender.com/api/doctor/login";
+
+const getDoctorPatients = async (req, res) => {
+  try {
+    const doctorId = req.userId; // assuming doctor is authenticated and userId is decoded
+
+    const appointments = await appointmentModel.find({ doctorId }).populate("userId");
+
+    const uniquePatientsMap = new Map();
+    appointments.forEach(app => {
+      if (app.userId) {
+        uniquePatientsMap.set(app.userId._id.toString(), app.userId);
+      }
+    });
+
+    const patients = Array.from(uniquePatientsMap.values());
+
+    res.json({ success: true, patients });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
 
 const loginDoctor = async (req, res) => {
 
@@ -265,6 +286,7 @@ export {
     doctorList,
     addHealthRecord,
     changeAvailablity,
+    getDoctorPatients,
     appointmentComplete,
     doctorDashboard,
     doctorProfile,

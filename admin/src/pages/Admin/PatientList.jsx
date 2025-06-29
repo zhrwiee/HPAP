@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 
 const PatientList = () => {
   const { aToken, patients = [], getAllPatients, deletePatient } = useContext(AdminContext);
+  
 
   const [showModal, setShowModal] = useState(false);
   const [selectedPatientId, setSelectedPatientId] = useState(null);

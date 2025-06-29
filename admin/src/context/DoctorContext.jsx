@@ -32,6 +32,22 @@ const DoctorContextProvider = (props) => {
         }
     }
 
+    const [patients, setPatients] = useState([]);
+
+    const getPatients = async () => {
+    try {
+        const { data } = await axios.get(backendUrl + '/api/doctor/patients', {headers: { dToken }});
+
+        if (data.success) {
+        setPatients(data.patients);
+        } else {
+        toast.error(data.message);
+        }
+    } catch (error) {
+        toast.error(error.message);
+    }
+    };
+
     // Getting Doctor profile data from Database using API
     const getProfileData = async () => {
         try {
@@ -139,6 +155,7 @@ const DoctorContextProvider = (props) => {
         dashData, getDashData,
         profileData, setProfileData,
         getProfileData,
+        getPatients
     }
 
     return (
