@@ -2,29 +2,23 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
-import HealthRecordModel from "../models/healthRecordsModel.js";
-import userModel from "../models/userModel.js";
+import HealthRecordModel from "../models/healthRecordsModel.js";;
 // API for doctor Login 
 const doctor_URL = "https://hpap-backend.onrender.com/api/doctor/login";
 
-const getDoctorPatients = async (req, res) => {
+const getDoctorHealthRecords = async (req, res) => {
   try {
-    const doctorId = req.userId; // assuming doctor is authenticated and userId is decoded
+    const doctorId = req.userId;
 
-    const appointments = await appointmentModel.find({ doctorId }).populate("userId");
+    const appointments = await appointmentModel.find({ docId: doctorId, isCompleted: true });
 
-    const uniquePatientsMap = new Map();
-    appointments.forEach(app => {
-      if (app.userId) {
-        uniquePatientsMap.set(app.userId._id.toString(), app.userId);
-      }
-    });
+    const userIds = [...new Set(appointments.map(a => a.userId))];
 
-    const patients = Array.from(uniquePatientsMap.values());
+    const records = await healthRecordModel.find({ userId: { $in: userIds } }).populate('userId');
 
-    res.json({ success: true, patients });
+    res.json({ success: true, records });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -286,7 +280,7 @@ export {
     doctorList,
     addHealthRecord,
     changeAvailablity,
-    getDoctorPatients,
+    getDoctorHealthRecords,
     appointmentComplete,
     doctorDashboard,
     doctorProfile,
