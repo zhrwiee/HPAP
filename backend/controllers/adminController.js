@@ -231,6 +231,24 @@ const allDoctors = async (req, res) => {
     }
 }
 
+ const deletePatient = async (req, res) => {
+  try {
+    const id = req.params.id;
+    await userModel.findByIdAndDelete(id);
+    res.json({ success: true, message: "Patient deleted" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+ const getAllPatients = async (req, res) => {
+  try {
+    const users = await userModel.find();
+    res.json({ success: true, data: users });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
 // API to get dashboard data for admin panel
 const adminDashboard = async (req, res) => {
   try {
@@ -262,6 +280,8 @@ export {
     updateDepartment,
     deleteDepartment,
     allDepartments,
+    deletePatient,
+    getAllPatients,
     addDepartment,
     allDoctors,
     deleteDoctor,

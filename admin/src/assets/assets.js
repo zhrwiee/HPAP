@@ -7,6 +7,7 @@ import home_icon from './home_icon.svg'
 import logo from './logo.jpeg'
 import department_icon from './department_icon.svg'
 import addDepart_Icon from './addDepart_Icon.svg'
+import patient from './patient.jpg'
 import departments_icon from './departments_icon.svg'
 import people_icon from './people_icon.svg'
 import upload_area from './upload_area.svg'
@@ -20,6 +21,7 @@ export const url="https://hpap-backend.onrender.com"
 export const assets = {
     add_icon,
     logo,
+    patient,
     addDepart_Icon,
     admin_logo,
     departments_icon,

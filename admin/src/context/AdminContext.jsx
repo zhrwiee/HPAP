@@ -15,6 +15,7 @@ const AdminContextProvider = (props) => {
     const [doctors, setDoctors] = useState([])
     const [dashData, setDashData] = useState(false)
     const [departments, setDepartments] = useState([])
+    const [patients, setPatients] = useState([]);
 
     // Getting all Doctors data from Database using API
     const getAllDoctors = async () => {
@@ -33,6 +34,15 @@ const AdminContextProvider = (props) => {
         }
 
     }
+
+
+const getAllPatients = async () => {
+  const res = await axios.get("/api/admin/all-patients", {
+    headers: { Authorization: aToken }
+  });
+  if (res.data.success) setPatients(res.data.data);
+};
+
     const getAllDepartments = async () => {
         try {
             const { data } = await axios.get(`${backendUrl}/api/admin/all-departments`, {
@@ -120,6 +130,12 @@ const AdminContextProvider = (props) => {
     headers: { aToken },
   });
 };
+        const deletePatient = async (id) => {
+        await axios.delete(`/api/admin/delete-patient/${id}`, {
+            headers: { Authorization: aToken }
+        });
+        };
+
 
 
     // Getting Admin Dashboard data from Database using API
@@ -152,8 +168,11 @@ const AdminContextProvider = (props) => {
             appointments,
             getAllAppointments,
             getDashData,
+            getAllPatients,
             cancelAppointment,
+            deletePatient,
             dashData,
+            patients,
             backendUrl, // ✅ add this line
             }
 
