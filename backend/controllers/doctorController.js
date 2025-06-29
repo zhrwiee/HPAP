@@ -6,7 +6,7 @@ import HealthRecordModel from "../models/healthRecordsModel.js";;
 // API for doctor Login 
 const doctor_URL = "https://hpap-backend.onrender.com/api/doctor/login";
 
-const getDoctorHealthRecords = async (req, res) => {
+const getAllHealthRecords  = async (req, res) => {
   try {
     const doctorId = req.userId;
 
@@ -14,7 +14,7 @@ const getDoctorHealthRecords = async (req, res) => {
 
     const userIds = [...new Set(appointments.map(a => a.userId))];
 
-    const records = await healthRecordModel.find({ userId: { $in: userIds } }).populate('userId');
+    const records = await HealthRecordModel.find({ userId: { $in: userIds } }).populate('userId');
 
     res.json({ success: true, records });
   } catch (error) {
@@ -280,7 +280,7 @@ export {
     doctorList,
     addHealthRecord,
     changeAvailablity,
-    getDoctorHealthRecords,
+    getAllHealthRecords,
     appointmentComplete,
     doctorDashboard,
     doctorProfile,

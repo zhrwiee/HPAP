@@ -13,6 +13,24 @@ const DoctorContextProvider = (props) => {
     const [appointments, setAppointments] = useState([])
     const [dashData, setDashData] = useState(false)
     const [profileData, setProfileData] = useState(false)
+    const [healthRecords, setHealthRecords] = useState([]);
+
+    const getHealthRecords = async () => {
+  try {
+    const { data } = await axios.get(backendUrl + '/api/doctor/health-records', {
+      headers: { dToken },
+    });
+
+    if (data.success) {
+      setHealthRecords(data.records);
+    } else {
+      toast.error(data.message);
+    }
+  } catch (error) {
+    toast.error(error.message);
+    console.log(error);
+  }
+};
 
     // Getting Doctor appointment data from Database using API
     const getAppointments = async () => {
@@ -155,6 +173,7 @@ const DoctorContextProvider = (props) => {
         dashData, getDashData,
         profileData, setProfileData,
         getProfileData,
+        healthRecords, getHealthRecords,
         getPatients
     }
 
