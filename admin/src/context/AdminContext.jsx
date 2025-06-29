@@ -49,6 +49,12 @@ const AdminContextProvider = (props) => {
     }
 
 
+        const deleteDoctor = async (id) => {
+    await fetch(`${backendUrl}/api/admin/delete-doctor/${id}`, {
+        method: 'DELETE',
+        headers: { aToken },
+    });
+    };
 
     // Function to change doctor availablity using API
     const changeAvailability = async (docId) => {
@@ -139,6 +145,7 @@ const AdminContextProvider = (props) => {
             aToken, setAToken,
             doctors,
             getAllDoctors,
+            deleteDoctor,
             deleteDepartment,
             changeAvailability,
             departments, getAllDepartments,

@@ -183,6 +183,18 @@ const addDoctor = async (req, res) => {
     }
 };
 
+ const deleteDoctor = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await doctorModel.findByIdAndDelete(id);
+    res.json({ success: true, message: "Doctor deleted" });
+  } catch (error) {
+    console.error("Delete doctor error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
 
 // api to get all department list for admin panel
 const allDepartments = async (req, res) => {
@@ -252,5 +264,6 @@ export {
     allDepartments,
     addDepartment,
     allDoctors,
+    deleteDoctor,
     adminDashboard
 }
