@@ -42,11 +42,11 @@ const DepartmentList = () => {
         formData.append('image', editForm.image);
       }
 
-        await axios.post(`${backendUrl}/api/admin/update-department/${id}`, formData, {
-          headers: {
-            token: aToken, // ✅ DO NOT manually set Content-Type
-          },
-        });
+      await axios.post(`${backendUrl}/api/admin/update-department/${id}`, formData, {
+        headers: {
+          token: aToken, // ✅ DO NOT manually set Content-Type
+        },
+      });
 
 
 

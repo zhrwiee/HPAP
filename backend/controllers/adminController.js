@@ -65,12 +65,8 @@ const updateDepartment = async (req, res) => {
     const { id } = req.params;
     const imageFile = req.file;
 
-    console.log('Updating department ID:', id);
-    console.log('New name:', departmentname);
-    console.log('Image file:', imageFile?.originalname);
-
     if (!departmentname) {
-      return res.status(400).json({ success: false, message: 'Department name is required' });
+      return res.json({ success: false, message: 'Department name is required' });
     }
 
     const updateData = { departmentname };
@@ -82,15 +78,11 @@ const updateDepartment = async (req, res) => {
       updateData.image = imageUpload.secure_url;
     }
 
-    const result = await departmentModel.findByIdAndUpdate(id, updateData, { new: true });
+    await departmentModel.findByIdAndUpdate(id, updateData);
 
-    if (!result) {
-      return res.status(404).json({ success: false, message: 'Department not found' });
-    }
-
-    res.json({ success: true, message: 'Department updated', updated: result });
+    res.json({ success: true, message: 'Department updated' });
   } catch (error) {
-    console.error('Update error:', error);
+    console.error('Update department error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -147,8 +139,8 @@ const addDoctor = async (req, res) => {
         const { name, email, password, about, address, department } = req.body;
         const imageFile = req.file; // may be undefined if user doesn't upload
 
-        if (!name || !email || !password || !about || !address || !department) {
-            return res.json({ success: false, message: "Missing Details" });
+        if (!name || !email || !password || !address || !department) {
+          return res.json({ success: false, message: "Missing required details" });
         }
 
         if (!validator.isEmail(email)) {
