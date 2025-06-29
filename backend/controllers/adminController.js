@@ -65,6 +65,10 @@ const updateDepartment = async (req, res) => {
     const { id } = req.params;
     const imageFile = req.file;
 
+    console.log('Updating department ID:', id);
+    console.log('New name:', departmentname);
+    console.log('Image file:', imageFile?.originalname);
+
     if (!departmentname) {
       return res.status(400).json({ success: false, message: 'Department name is required' });
     }
@@ -78,10 +82,15 @@ const updateDepartment = async (req, res) => {
       updateData.image = imageUpload.secure_url;
     }
 
-    await departmentModel.findByIdAndUpdate(id, updateData);
-    res.json({ success: true, message: 'Department updated' });
+    const result = await departmentModel.findByIdAndUpdate(id, updateData, { new: true });
+
+    if (!result) {
+      return res.status(404).json({ success: false, message: 'Department not found' });
+    }
+
+    res.json({ success: true, message: 'Department updated', updated: result });
   } catch (error) {
-    console.error('Update department error:', error);
+    console.error('Update error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
