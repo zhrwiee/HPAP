@@ -243,7 +243,7 @@ const addHealthRecord = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-// API to get dashboard data for doctor panel
+// API to get dashboard data for doctor panels
 const doctorDashboard = async (req, res) => {
   try {
     const { docId } = req.body;
