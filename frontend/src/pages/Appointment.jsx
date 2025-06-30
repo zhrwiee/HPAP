@@ -15,6 +15,7 @@ const Appointment = () => {
     time: '',
     referral: null,
     symptoms: [],
+    //ss
     otherSymptom: '',
   });
 
