@@ -229,12 +229,19 @@ const updateDoctorDepartment = async (req, res) => {
 const allDepartments = async (req, res) => {
   try {
     const departments = await departmentModel.find({});
-    res.json({ success: true, departments });
+    const doctors = await doctorModel.find({});
+
+    res.json({
+      success: true,
+      departments,
+      doctors,
+    });
   } catch (error) {
-    console.error("Error fetching departments:", error);
+    console.error("Error fetching departments and doctors:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 const deleteDepartment = async (req, res) => {
   try {
