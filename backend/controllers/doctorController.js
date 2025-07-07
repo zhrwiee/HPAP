@@ -87,10 +87,10 @@ const appointmentsDoctor = async (req, res) => {
 // API to cancel appointment for doctor panel
 const appointmentCancel = async (req, res) => {
   try {
-    const { docId, appointmentId } = req.body;
+    const { appointmentId } = req.body;
 
-    if (!appointmentId || !docId) {
-      return res.status(400).json({ success: false, message: 'Missing appointmentId or docId' });
+    if (!appointmentId) {
+      return res.status(400).json({ success: false, message: 'Missing appointmentId' });
     }
 
     const appointment = await appointmentModel.findById(appointmentId);
