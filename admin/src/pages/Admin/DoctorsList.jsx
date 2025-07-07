@@ -9,7 +9,7 @@ const DoctorsList = () => {
     getAllDoctors,
     deleteDoctor,
     updateDoctorDepartment,
-    getAllDepartments,
+    getAllDepartmentsDoctor, // ✅ using correct function from AdminContext
     departments,
   } = useContext(AdminContext);
 
@@ -20,7 +20,7 @@ const DoctorsList = () => {
   useEffect(() => {
     if (aToken) {
       getAllDoctors();
-      getAllDepartmentsDoctor(); // ✅ Ensure department list loads
+      getAllDepartmentsDoctor(); // ✅ fetch departments from doctor list
     }
   }, [aToken]);
 
@@ -70,7 +70,7 @@ const DoctorsList = () => {
                 <button
                   onClick={() => {
                     setEditDoctor(item);
-                    setNewDept(item.departmentname); // ✅ Pre-fill current dept
+                    setNewDept(item.departmentname);
                   }}
                   className='bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600'
                 >
@@ -128,8 +128,8 @@ const DoctorsList = () => {
             >
               <option value=''>Select Department</option>
               {departments.map((dept, i) => (
-                <option key={i} value={dept.name}>
-                  {dept.name}
+                <option key={i} value={dept}>
+                  {dept}
                 </option>
               ))}
             </select>
