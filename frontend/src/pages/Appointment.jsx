@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AppContext } from '../Context/AppContext';
+import DatePicker from 'react-datepicker'; // ⬅️ add this at the top
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
@@ -177,20 +178,45 @@ const Appointment = () => {
         {icon && <img src={icon} alt="Department Icon" className="mx-auto mt-2 w-12 h-12" />}
       </div>
 
-      {/* Date Picker */}
-      <div className="mb-5">
-        <label className="block text-sm font-medium mb-1">Appointment Date</label>
-        <input
-          type="date"
-          name="date"
-          value={form.date}
-          onChange={handleInputChange}
-          className="w-full border px-3 py-2 rounded"
-          required
-          min={today.toISOString().split('T')[0]}
-          max={maxDate.toISOString().split('T')[0]}
-        />
-      </div>
+    {/* Date Picker */}
+    <div className="mb-5">
+      <label className="block text-sm font-medium mb-1">Appointment Date</label>
+      <DatePicker
+        selected={form.date ? new Date(form.date) : null}
+        onChange={(date) => {
+          if (!date) return;
+
+          const iso = date.toISOString().split('T')[0];
+          const day = date.getDay();
+
+          if (day === 0 || day === 6) {
+            toast.error('Appointments are only available Monday to Friday');
+            return;
+          }
+
+          if (holidays.includes(iso)) {
+            toast.error('This date is a holiday. Please select another.');
+            return;
+          }
+
+          setForm(prev => ({
+            ...prev,
+            date: iso,
+            time: '' // reset time if date changes
+          }));
+        }}
+        minDate={today}
+        maxDate={maxDate}
+        filterDate={(date) => {
+          const day = date.getDay();
+          const iso = date.toISOString().split('T')[0];
+          return day !== 0 && day !== 6 && !holidays.includes(iso); // Disable weekends and holidays
+        }}
+        placeholderText="Select appointment date"
+        className="w-full border px-3 py-2 rounded"
+        dateFormat="yyyy-MM-dd"
+      />
+    </div>
 
       {/* Time Slots */}
       <div className="mb-5">

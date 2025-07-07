@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import 'react-datepicker/dist/react-datepicker.css';
 import Navbar from './Components/Navbar';
 import Footer from './Components/Footer';
 import Home from './pages/Home';
