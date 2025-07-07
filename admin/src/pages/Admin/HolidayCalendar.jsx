@@ -8,6 +8,10 @@ const HolidayCalendar = () => {
   const [date, setDate] = useState('');
   const [isPublic, setIsPublic] = useState(false);
 
+  // For delete popup
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [selectedHoliday, setSelectedHoliday] = useState(null);
+
   useEffect(() => {
     fetchHolidays();
   }, []);
@@ -19,7 +23,7 @@ const HolidayCalendar = () => {
 
   const handleAdd = async () => {
     if (!title || !date) return alert('Title and date are required');
-    const formattedDate = new Date(date).toLocaleDateString('en-GB').split('/').reverse().join('_'); // "YYYY_MM_DD"
+    const formattedDate = new Date(date).toLocaleDateString('en-GB').split('/').reverse().join('_');
     const success = await addHoliday({ title, date: formattedDate, isPublic });
     if (success) {
       setTitle('');
@@ -29,11 +33,18 @@ const HolidayCalendar = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    const confirmed = window.confirm("Are you sure to delete this holiday?");
-    if (confirmed) {
-      const success = await deleteHoliday(id);
-      if (success) fetchHolidays();
+  const confirmDelete = (holiday) => {
+    setSelectedHoliday(holiday);
+    setShowConfirm(true);
+  };
+
+  const handleDeleteConfirmed = async () => {
+    if (!selectedHoliday) return;
+    const success = await deleteHoliday(selectedHoliday._id);
+    if (success) {
+      fetchHolidays();
+      setShowConfirm(false);
+      setSelectedHoliday(null);
     }
   };
 
@@ -82,7 +93,7 @@ const HolidayCalendar = () => {
               </p>
             </div>
             <button
-              onClick={() => handleDelete(h._id)}
+              onClick={() => confirmDelete(h)}
               className="text-red-500 text-sm hover:underline"
             >
               Delete
@@ -90,6 +101,30 @@ const HolidayCalendar = () => {
           </div>
         ))}
       </div>
+
+      {/* Confirm Delete Popup */}
+      {showConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-5 rounded shadow-lg w-[90%] max-w-sm">
+            <h3 className="text-lg font-semibold mb-3">Confirm Deletion</h3>
+            <p className="mb-4">Are you sure you want to delete <strong>{selectedHoliday?.title}</strong>?</p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setShowConfirm(false)}
+                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteConfirmed}
+                className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white text-sm"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

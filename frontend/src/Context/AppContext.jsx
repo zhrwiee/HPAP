@@ -85,6 +85,24 @@ const AppContextProvider = (props) => {
     }
   };
 
+  const getHolidays = async () => {
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/user/holidays`, {
+        headers: { token }
+      });
+      if (data.success) {
+        return data.holidays;
+      } else {
+        toast.error(data.message);
+        return [];
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to load holidays');
+      return [];
+    }
+  };
+
   // Delete health record by ID
 const deleteHealthRecord = async (recordId) => {
   try {
@@ -160,6 +178,7 @@ const deleteHealthRecord = async (recordId) => {
     token,
     createHealthRecord,
     getHealthRecords,
+    getHolidays,
     deleteHealthRecord,
         setToken,
     userData,

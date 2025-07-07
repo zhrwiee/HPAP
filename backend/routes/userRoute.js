@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginUser, registerUser, getProfile,getDepartments ,deleteHealthRecord, getHealthRecords, addHealthRecord, deleteMyAppointment,markAsRead , checkSlotAvailability,updateProfile, bookAppointment, listAppointment, cancelAppointment, paymentRazorpay, verifyRazorpay, paymentStripe, verifyStripe } from '../controllers/userController.js';
+import { loginUser, registerUser,getHolidays, getProfile,getDepartments ,deleteHealthRecord, getHealthRecords, addHealthRecord, deleteMyAppointment,markAsRead , checkSlotAvailability,updateProfile, bookAppointment, listAppointment, cancelAppointment, paymentRazorpay, verifyRazorpay, paymentStripe, verifyStripe } from '../controllers/userController.js';
 import upload from '../middleware/multer.js';
 import authUser from '../middleware/authUser.js';
 const userRouter = express.Router();
@@ -8,6 +8,7 @@ userRouter.post("/register", registerUser)
 userRouter.post("/login", loginUser)
 userRouter.delete("/delete-appointment/:id", authUser, deleteMyAppointment);
 userRouter.post("/mark-as-read", authUser, markAsRead)
+userRouter.get("/get-holidays", authUser, getHolidays);
 userRouter.get("/departments", getDepartments)
 userRouter.get('/check-slot', checkSlotAvailability)
 userRouter.get("/get-profile", authUser, getProfile)

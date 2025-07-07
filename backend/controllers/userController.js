@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import validator from "validator";
 import userModel from "../models/userModel.js";
 import doctorModel from "../models/doctorModel.js";
+import HolidayModel from "../models/HolidayModel.js";
 import healthRecordModel from "../models/healthRecordsModel.js";
 // import HealthRecord from '../models/healthRecordModel.js';
 import departmentModel from "../models/DepartmentModel.js";
@@ -19,6 +20,14 @@ const razorpayInstance = new razorpay({
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 })
 
+const getHolidays = async (req, res) => {
+  try {
+    const holidays = await HolidayModel.find().sort({ date: 1 });
+    res.json({ success: true, holidays });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
 // API to register user
 const registerUser = async (req, res) => {
 
@@ -497,6 +506,7 @@ export {
     updateProfile,
     getDepartments,
     getHealthRecords,
+    getHolidays,
     addHealthRecord,
     bookAppointment,
     listAppointment,

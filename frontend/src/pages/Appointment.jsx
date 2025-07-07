@@ -15,11 +15,11 @@ const Appointment = () => {
     time: '',
     referral: null,
     symptoms: [],
-    //sss
     otherSymptom: '',
   });
 
   const [unavailableSlots, setUnavailableSlots] = useState([]);
+  const [holidays, setHolidays] = useState([]);
 
   const timeSlots = [
     '08:00 AM', '08:30 AM', '09:00 AM', '09:30 AM',
@@ -32,14 +32,43 @@ const Appointment = () => {
   const maxDate = new Date();
   maxDate.setDate(today.getDate() + 30);
 
+  useEffect(() => {
+    fetchHolidays();
+  }, []);
+
+  useEffect(() => {
+    checkSlotAvailability();
+  }, [form.date]);
+
+  const fetchHolidays = async () => {
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/user/get-holidays`);
+      if (data.success && Array.isArray(data.holidays)) {
+        const formatted = data.holidays.map(h => {
+          const [d, m, y] = h.date.split('_');
+          return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`; // "YYYY-MM-DD"
+        });
+        setHolidays(formatted);
+      }
+    } catch (err) {
+      console.error("Error fetching holidays:", err);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
     if (name === 'date') {
       const selectedDate = new Date(value);
       const day = selectedDate.getDay();
+
       if (day === 0 || day === 6) {
         toast.error('Appointments are only available Monday to Friday');
+        return;
+      }
+
+      if (holidays.includes(value)) {
+        toast.error('This date is a holiday. Please select another date.');
         return;
       }
     }
@@ -65,7 +94,6 @@ const Appointment = () => {
       const { data } = await axios.get(
         `${backendUrl}/api/user/check-slot?department=${department}&date=${slotDate}`
       );
-
       if (data.success) {
         setUnavailableSlots(data.unavailable || []);
       }
@@ -73,10 +101,6 @@ const Appointment = () => {
       console.error('Slot availability error:', error);
     }
   };
-
-  useEffect(() => {
-    checkSlotAvailability();
-  }, [form.date]);
 
   const bookAppointment = async () => {
     if (!token) {
@@ -100,18 +124,10 @@ const Appointment = () => {
     formData.append('slotTime', slotTime);
     formData.append('otherSymptom', form.otherSymptom.trim());
 
-    // ✅ Append symptoms[]
-    form.symptoms.forEach(s => {
-      formData.append('symptoms[]', s);
-    });
+    form.symptoms.forEach(s => formData.append('symptoms[]', s));
 
     if (form.referral) {
       formData.append('referralLetter', form.referral);
-    }
-
-    // 🔍 Debug output (optional)
-    for (let pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
     }
 
     try {
@@ -128,7 +144,6 @@ const Appointment = () => {
 
       if (data.success) {
         toast.success(data.message);
-        // ✅ Reset form
         setForm({
           date: '',
           time: '',
@@ -190,7 +205,11 @@ const Appointment = () => {
                 onClick={() => !isUnavailable && handleTimeSelect(slot)}
                 disabled={isUnavailable}
                 className={`px-4 py-2 text-sm rounded border ${
-                  form.time === slot ? 'bg-blue-500 text-white' : isUnavailable ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'border-gray-300'
+                  form.time === slot
+                    ? 'bg-blue-500 text-white'
+                    : isUnavailable
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'border-gray-300'
                 }`}
               >
                 {slot}
