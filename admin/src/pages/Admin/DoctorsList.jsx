@@ -9,7 +9,7 @@ const DoctorsList = () => {
     getAllDoctors,
     deleteDoctor,
     updateDoctorDepartment,
-    getAllDepartmentsDoctor, // ✅ using correct function from AdminContext
+    getAllDepartments, // ✅ load departments from departmentModel
     departments,
   } = useContext(AdminContext);
 
@@ -20,7 +20,7 @@ const DoctorsList = () => {
   useEffect(() => {
     if (aToken) {
       getAllDoctors();
-      getAllDepartmentsDoctor(); // ✅ fetch departments from doctor list
+      getAllDepartments(); // ✅ fetch department names from department model
     }
   }, [aToken]);
 
@@ -29,7 +29,7 @@ const DoctorsList = () => {
       await deleteDoctor(confirmId);
       toast.success('Doctor deleted');
       setConfirmId(null);
-      getAllDoctors(); // Refresh
+      getAllDoctors();
     } catch (err) {
       toast.error('Failed to delete doctor');
     }
@@ -38,11 +38,11 @@ const DoctorsList = () => {
   const handleEditSubmit = async () => {
     try {
       if (!newDept) return toast.error('Please select a department');
-      await updateDoctorDepartment(editDoctor._id, newDept);
+      await updateDoctorDepartment(editDoctor._id, newDept); // ✅ update in doctorModel
       toast.success('Department updated');
       setEditDoctor(null);
       setNewDept('');
-      getAllDoctors(); // Refresh
+      getAllDoctors();
     } catch (err) {
       toast.error('Failed to update department');
     }
@@ -88,7 +88,6 @@ const DoctorsList = () => {
         ))}
       </div>
 
-      {/* Delete Confirmation Modal */}
       {confirmId && (
         <div className='fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50'>
           <div className='bg-white rounded-lg p-6 w-80 text-center shadow-xl'>
@@ -112,7 +111,6 @@ const DoctorsList = () => {
         </div>
       )}
 
-      {/* Edit Department Modal */}
       {editDoctor && (
         <div className='fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50'>
           <div className='bg-white rounded-lg p-6 w-96 text-center shadow-xl'>
@@ -128,9 +126,7 @@ const DoctorsList = () => {
             >
               <option value=''>Select Department</option>
               {departments.map((dept, i) => (
-                <option key={i} value={dept}>
-                  {dept}
-                </option>
+                <option key={i} value={dept.departmentname}>{dept.departmentname}</option>
               ))}
             </select>
 

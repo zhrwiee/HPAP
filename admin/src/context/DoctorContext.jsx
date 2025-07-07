@@ -102,27 +102,25 @@ const DoctorContextProvider = (props) => {
         }
         };
     // Function to cancel doctor appointment using API
-    const cancelAppointment = async (appointmentId) => {
+        const cancelAppointment = async (appointmentId) => {
+    try {
+        const { data } = await axios.post(`${backendUrl}/api/doctor/cancel-appointment`, {
+        appointmentId,
+        docId: doctor._id, // Make sure doctor context has this
+        }, {
+        headers: { dToken },
+        });
 
-        try {
-
-            const { data } = await axios.post(backendUrl + '/api/doctor/cancel-appointment', { appointmentId }, { headers: { dToken } })
-
-            if (data.success) {
-                toast.success(data.message)
-                getAppointments()
-                // after creating dashboard
-                getDashData()
-            } else {
-                toast.error(data.message)
-            }
-
-        } catch (error) {
-            toast.error(error.message)
-            console.log(error)
+        if (data.success) {
+        toast.success(data.message);
+        getAppointments(); // Refresh list
+        } else {
+        toast.error(data.message);
         }
-
+    } catch (error) {
+        toast.error(error.response?.data?.message || error.message);
     }
+    };
 
     // Function to Mark appointment completed using API
     const completeAppointment = async (appointmentId) => {

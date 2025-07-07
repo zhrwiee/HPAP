@@ -86,24 +86,32 @@ const appointmentsDoctor = async (req, res) => {
 
 // API to cancel appointment for doctor panel
 const appointmentCancel = async (req, res) => {
-    try {
+  try {
+    const { docId, appointmentId } = req.body;
 
-        const { docId, appointmentId } = req.body
-
-        const appointmentData = await appointmentModel.findById(appointmentId)
-        if (appointmentData && appointmentData.docId === docId) {
-            await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true })
-            return res.json({ success: true, message: 'Appointment Cancelled' })
-        }
-
-        res.json({ success: false, message: 'Appointment Cancelled' })
-
-    } catch (error) {
-        console.log(error)
-        res.json({ success: false, message: error.message })
+    if (!appointmentId || !docId) {
+      return res.status(400).json({ success: false, message: 'Missing appointmentId or docId' });
     }
 
-}
+    const appointment = await appointmentModel.findById(appointmentId);
+    if (!appointment) {
+      return res.status(404).json({ success: false, message: 'Appointment not found' });
+    }
+
+    if (appointment.docId.toString() !== docId.toString()) {
+      return res.status(403).json({ success: false, message: 'Unauthorized doctor' });
+    }
+
+    appointment.cancelled = true;
+    await appointment.save();
+
+    res.json({ success: true, message: 'Appointment cancelled successfully' });
+  } catch (error) {
+    console.error('Appointment Cancel Error:', error);
+    res.status(500).json({ success: false, message: 'Server error while cancelling appointment' });
+  }
+};
+
 
 // API to mark appointment completed for doctor panel
 const appointmentComplete = async (req, res) => {
