@@ -206,23 +206,22 @@ const updateDoctorDepartment = async (req, res) => {
       return res.status(400).json({ success: false, message: "Department is required" });
     }
 
-    const updatedDoctor = await doctorModel.findByIdAndUpdate(
+    const doctor = await doctorModel.findByIdAndUpdate(
       id,
       { departmentname: department },
       { new: true }
     );
 
-    if (!updatedDoctor) {
+    if (!doctor) {
       return res.status(404).json({ success: false, message: "Doctor not found" });
     }
 
-    res.json({ success: true, message: "Doctor department updated", doctor: updatedDoctor });
+    res.json({ success: true, doctor });
   } catch (error) {
     console.error("Update doctor department error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 
 // api to get all department list for admin panel

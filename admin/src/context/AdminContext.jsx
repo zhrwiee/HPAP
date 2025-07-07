@@ -82,8 +82,10 @@ const AdminContextProvider = (props) => {
         headers: { aToken },
     });
     };
-    const updateDoctorDepartment = async (id, department) => {
-  const res = await fetch(`${backendUrl}/api/admin/update-doctor-department/${id}`, {
+
+    
+  const updateDoctorDepartment = async (id, department) => {
+  const res = await fetch(`${backendUrl}/api/admin/doctors/${id}/department`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -100,6 +102,7 @@ const AdminContextProvider = (props) => {
 
   return data.doctor;
 };
+
 
     // Function to change doctor availablity using API
     const changeAvailability = async (docId) => {
