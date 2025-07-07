@@ -1,14 +1,15 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { DoctorContext } from '../../context/DoctorContext';
 import { AppContext } from '../../context/AppContext';
 import { assets } from '../../assets/assets';
 import { useNavigate } from 'react-router-dom';
 
-
-const DoctorAppointments = () => {
+const DoctorAppointmentsToday = () => {
   const navigate = useNavigate();
   const { dToken, appointments, getAppointments, cancelAppointment, completeAppointment } = useContext(DoctorContext);
   const { slotDateFormat, calculateAge } = useContext(AppContext);
+
+  const [todayAppointments, setTodayAppointments] = useState([]);
 
   useEffect(() => {
     if (dToken) {
@@ -16,12 +17,22 @@ const DoctorAppointments = () => {
     }
   }, [dToken]);
 
+  useEffect(() => {
+    const today = new Date();
+    const formattedToday = `${today.getDate()}_${today.getMonth() + 1}_${today.getFullYear()}`;
+
+    const filtered = appointments.filter(
+      (appt) => appt.slotDate === formattedToday && !appt.cancelled
+    );
+
+    setTodayAppointments(filtered);
+  }, [appointments]);
+
   return (
     <div className='w-full max-w-6xl m-5'>
-      <p className='mb-3 text-lg font-medium'>All Appointments</p>
+      <p className='mb-3 text-lg font-medium'>Today's Appointments</p>
 
       <div className='bg-white border rounded text-sm max-h-[80vh] overflow-y-scroll'>
-        {/* Header */}
         <div className='max-sm:hidden grid grid-cols-[0.3fr_2fr_1fr_1fr_1fr_2fr_1fr_1fr_1fr] gap-1 py-3 px-6 border-b bg-gray-100 font-medium text-gray-600'>
           <p>#</p>
           <p>Patient</p>
@@ -34,32 +45,26 @@ const DoctorAppointments = () => {
           <p>Action</p>
         </div>
 
-        {/* Appointment Rows */}
-        {appointments.map((item, index) => (
+        {todayAppointments.map((item, index) => (
           <div
             key={index}
             className='flex flex-wrap justify-between max-sm:gap-5 max-sm:text-base sm:grid grid-cols-[0.3fr_2fr_1fr_1fr_1fr_2fr_1fr_1fr_1fr] gap-1 items-center text-gray-600 py-3 px-6 border-b hover:bg-gray-50'
           >
             <p className='max-sm:hidden'>{index + 1}</p>
-
-            {/* Patient Info */}
             <div className='flex items-center gap-2'>
               <img src={item.userData.image} className='w-8 h-8 rounded-full object-cover' alt="Patient" />
               <p>{item.userData.name}</p>
             </div>
 
             <p className='max-sm:hidden'>{calculateAge(item.userData.dob)} yrs</p>
-
             <p>{slotDateFormat(item.slotDate)}</p>
             <p>{item.slotTime}</p>
 
-            {/* Symptoms */}
             <p>
               {item.symptoms.join(', ')}
               {item.otherSymptom && `, ${item.otherSymptom}`}
             </p>
 
-            {/* Referral Letter */}
             <p>
               {item.referralLetter ? (
                 <a
@@ -75,12 +80,10 @@ const DoctorAppointments = () => {
               )}
             </p>
 
-            {/* Department */}
             <p>{item.departmentname}</p>
 
-            {/* Action Buttons */}
             <div className='flex items-center gap-2'>
-              {!item.cancelled && !item.isCompleted && (
+              {!item.isCompleted && (
                 <>
                   <img
                     onClick={() => cancelAppointment(item._id)}
@@ -98,9 +101,6 @@ const DoctorAppointments = () => {
                   />
                 </>
               )}
-              {item.cancelled && (
-                <span className='text-red-500 text-xs font-medium'>Cancelled</span>
-              )}
               {item.isCompleted && (
                 <span className='text-green-500 text-xs font-medium'>Completed</span>
               )}
@@ -108,9 +108,13 @@ const DoctorAppointments = () => {
 
           </div>
         ))}
+
+        {todayAppointments.length === 0 && (
+          <div className='text-center py-8 text-gray-400'>No appointments for today.</div>
+        )}
       </div>
     </div>
   );
 };
 
-export default DoctorAppointments;
+export default DoctorAppointmentsToday;

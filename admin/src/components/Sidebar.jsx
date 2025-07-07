@@ -14,25 +14,25 @@ const Sidebar = () => {
         <ul className='text-[#515151] mt-5'>
 
           <NavLink to='/admin-dashboard' className={({ isActive }) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`}>
-            <img className='min-w-5' src={assets.home_icon} alt='Dashboard' />
+            <img className='w-5 h-5 object-contain' src={assets.home_icon} alt='Dashboard' />
             <p className='hidden md:block'>Dashboard</p>
           </NavLink>
 
           <NavLink to='/all-appointments' className={({ isActive }) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`}>
-            <img className='min-w-5' src={assets.appointment_icon} alt='Appointments' />
+            <img className='w-5 h-5 object-contain' src={assets.appointment_icon} alt='Appointments' />
             <p className='hidden md:block'>Appointments</p>
           </NavLink>
 
           <NavLink to='/appointments-today' className={({ isActive }) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`}>
-            <img className='min-w-5' src={assets.appointment_icon} alt='Appointments' />
+            <img className='w-5 h-5 object-contain' src={assets.Appointment_Today} alt='Appointments Today' />
             <p className='hidden md:block'>Appointments Today</p>
           </NavLink>
 
           <NavLink to='/add-doctor' className={({ isActive }) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`}>
-            <img className='min-w-5' src={assets.add_icon} alt='Add Doctor' />
+            <img className='w-5 h-5 object-contain' src={assets.add_icon} alt='Add Doctor' />
             <p className='hidden md:block'>Add Doctor or Staff</p>
           </NavLink>
-
+          
           <NavLink to='/doctor-list' className={({ isActive }) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`}>
             <img className='min-w-5' src={assets.people_icon} alt='Doctor List' />
             <p className='hidden md:block'>Doctors or Staff List</p>
