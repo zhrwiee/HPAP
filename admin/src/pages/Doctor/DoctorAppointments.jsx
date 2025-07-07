@@ -4,12 +4,14 @@ import { AppContext } from '../../context/AppContext';
 import { assets } from '../../assets/assets';
 import { useNavigate } from 'react-router-dom';
 
-const DoctorAppointmentsToday = () => {
+const DoctorAppointments = () => {
   const navigate = useNavigate();
-  const { dToken, appointments, getAppointments, cancelAppointment, completeAppointment } = useContext(DoctorContext);
+  const { dToken, appointments, getAppointments, cancelAppointment } = useContext(DoctorContext);
   const { slotDateFormat, calculateAge } = useContext(AppContext);
 
-  const [todayAppointments, setTodayAppointments] = useState([]);
+  const [openPatientIds, setOpenPatientIds] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchDate, setSearchDate] = useState('');
 
   useEffect(() => {
     if (dToken) {
@@ -17,104 +19,146 @@ const DoctorAppointmentsToday = () => {
     }
   }, [dToken]);
 
-  useEffect(() => {
-    const today = new Date();
-    const formattedToday = `${today.getDate()}_${today.getMonth() + 1}_${today.getFullYear()}`;
+  const groupedAppointments = appointments.reduce((acc, appt) => {
+    const patientId = appt.userId || appt.userData?._id || 'unknown';
+    if (!acc[patientId]) acc[patientId] = [];
+    acc[patientId].push(appt);
+    return acc;
+  }, {});
 
-    const filtered = appointments.filter(
-      (appt) => appt.slotDate === formattedToday && !appt.cancelled
-    );
+  Object.values(groupedAppointments).forEach(group => {
+    group.sort((a, b) => new Date(a.slotDate + ' ' + a.slotTime) - new Date(b.slotDate + ' ' + b.slotTime));
+  });
 
-    setTodayAppointments(filtered);
-  }, [appointments]);
+  const sortedGroups = Object.entries(groupedAppointments).sort(([, a], [, b]) => {
+    const dateA = new Date(a[a.length - 1].slotDate + ' ' + a[a.length - 1].slotTime);
+    const dateB = new Date(b[b.length - 1].slotDate + ' ' + b[b.length - 1].slotTime);
+    return dateB - dateA;
+  });
+
+  const toggleOpen = (patientId) => {
+    setOpenPatientIds((prev) => ({
+      ...prev,
+      [patientId]: !prev[patientId],
+    }));
+  };
 
   return (
     <div className='w-full max-w-6xl m-5'>
-      <p className='mb-3 text-lg font-medium'>Today's Appointments</p>
+      <p className='mb-3 text-lg font-medium'>All Appointments</p>
+
+      {/* Search and Date Filter */}
+      <div className='mb-3 flex items-center gap-2 flex-wrap'>
+        <input
+          type='text'
+          placeholder='Search by patient name...'
+          className='border p-2 rounded w-full max-w-md text-sm'
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+        />
+        <input
+          type='date'
+          className='border p-2 rounded text-sm'
+          value={searchDate}
+          onChange={(e) => setSearchDate(e.target.value)}
+        />
+      </div>
 
       <div className='bg-white border rounded text-sm max-h-[80vh] overflow-y-scroll'>
-        <div className='max-sm:hidden grid grid-cols-[0.3fr_2fr_1fr_1fr_1fr_2fr_1fr_1fr_1fr] gap-1 py-3 px-6 border-b bg-gray-100 font-medium text-gray-600'>
-          <p>#</p>
+        <div className='hidden sm:grid grid-cols-[2fr_2fr_1fr_0.5fr] py-3 px-6 border-b bg-gray-100'>
           <p>Patient</p>
-          <p>Age</p>
-          <p>Date</p>
-          <p>Time</p>
-          <p>Symptoms</p>
-          <p>Referral</p>
-          <p>Department</p>
+          <p>Date & Time</p>
           <p>Action</p>
+          <p className='text-right pr-2'>Total</p>
         </div>
 
-        {todayAppointments.map((item, index) => (
-          <div
-            key={index}
-            className='flex flex-wrap justify-between max-sm:gap-5 max-sm:text-base sm:grid grid-cols-[0.3fr_2fr_1fr_1fr_1fr_2fr_1fr_1fr_1fr] gap-1 items-center text-gray-600 py-3 px-6 border-b hover:bg-gray-50'
-          >
-            <p className='max-sm:hidden'>{index + 1}</p>
-            <div className='flex items-center gap-2'>
-              <img src={item.userData.image} className='w-8 h-8 rounded-full object-cover' alt="Patient" />
-              <p>{item.userData.name}</p>
-            </div>
+        {sortedGroups
+          .filter(([_, appts]) => {
+            const name = (appts[0].userData?.name || '').toLowerCase();
 
-            <p className='max-sm:hidden'>{calculateAge(item.userData.dob)} yrs</p>
-            <p>{slotDateFormat(item.slotDate)}</p>
-            <p>{item.slotTime}</p>
+            const dateMatch = appts.some(appt => {
+              if (!searchDate) return true;
+              const [d, m, y] = appt.slotDate.split('_');
+              const formatted = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+              return formatted === searchDate;
+            });
 
-            <p>
-              {item.symptoms.join(', ')}
-              {item.otherSymptom && `, ${item.otherSymptom}`}
-            </p>
-
-            <p>
-              {item.referralLetter ? (
-                <a
-                  href={item.referralLetter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className='text-blue-500 hover:underline'
+            return name.includes(searchTerm) && dateMatch;
+          })
+          .map(([patientId, appts]) => {
+            const patient = appts[0].userData || {};
+            return (
+              <div key={patientId} className='border-b'>
+                {/* Patient Header */}
+                <div
+                  className='grid sm:grid-cols-[2fr_2fr_1fr_0.5fr] px-6 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 items-center'
+                  onClick={() => toggleOpen(patientId)}
                 >
-                  View
-                </a>
-              ) : (
-                <span className='text-gray-400'>None</span>
-              )}
-            </p>
+                  <div className='flex items-center gap-2'>
+                    <img
+                      src={patient.image || assets.default_avatar}
+                      className='w-8 h-8 rounded-full object-cover bg-gray-200'
+                      alt="Patient"
+                    />
+                    <div>
+                      <p className='font-medium'>{patient.name || 'N/A'}</p>
+                      <p className='text-xs text-gray-500'>{calculateAge(patient.dob)} yrs</p>
+                    </div>
+                  </div>
+                  <p className='text-gray-400'>—</p>
+                  <p className='text-gray-400'>—</p>
+                  <p className='text-right pr-2 font-medium'>{appts.length}</p>
+                </div>
 
-            <p>{item.departmentname}</p>
-
-            <div className='flex items-center gap-2'>
-              {!item.isCompleted && (
-                <>
-                  <img
-                    onClick={() => cancelAppointment(item._id)}
-                    className='w-6 cursor-pointer'
-                    src={assets.cancel_icon}
-                    alt="Cancel"
-                    title="Cancel"
-                  />
-                  <img
-                    onClick={() => navigate('/doctor/health-record', { state: { appointmentId: item._id, userId: item.userId } })}
-                    className='w-6 cursor-pointer'
-                    src={assets.tick_icon}
-                    alt="Complete"
-                    title="Add Health Record"
-                  />
-                </>
-              )}
-              {item.isCompleted && (
-                <span className='text-green-500 text-xs font-medium'>Completed</span>
-              )}
-            </div>
-
-          </div>
-        ))}
-
-        {todayAppointments.length === 0 && (
-          <div className='text-center py-8 text-gray-400'>No appointments for today.</div>
-        )}
+                {/* Appointments */}
+                {openPatientIds[patientId] &&
+                  appts.map((item, index) => (
+                    <div
+                      key={index}
+                      className='sm:grid sm:grid-cols-[2fr_2fr_1fr_0.5fr] px-6 py-3 items-center text-gray-600 hover:bg-gray-50'
+                    >
+                      <div className='text-sm'>
+                        {item.symptoms.join(', ')}
+                        {item.otherSymptom && `, ${item.otherSymptom}`}
+                      </div>
+                      <p>{slotDateFormat(item.slotDate)}, {item.slotTime}</p>
+                      <div className='flex items-center gap-2'>
+                        {!item.cancelled && !item.isCompleted && (
+                          <>
+                            <img
+                              onClick={() => cancelAppointment(item._id)}
+                              src={assets.cancel_icon}
+                              alt="Cancel"
+                              className='w-6 cursor-pointer hover:scale-110 transition-transform'
+                            />
+                            <img
+                              onClick={() =>
+                                navigate('/doctor/health-record', {
+                                  state: { appointmentId: item._id, userId: item.userId }
+                                })
+                              }
+                              src={assets.tick_icon}
+                              alt="Complete"
+                              className='w-6 cursor-pointer hover:scale-110 transition-transform'
+                            />
+                          </>
+                        )}
+                        {item.cancelled && (
+                          <span className='text-red-500 text-xs font-medium'>Cancelled</span>
+                        )}
+                        {item.isCompleted && (
+                          <span className='text-green-500 text-xs font-medium'>Completed</span>
+                        )}
+                      </div>
+                      <p className='text-right pr-2 text-gray-400'>—</p>
+                    </div>
+                  ))}
+              </div>
+            );
+          })}
       </div>
     </div>
   );
 };
 
-export default DoctorAppointmentsToday;
+export default DoctorAppointments;

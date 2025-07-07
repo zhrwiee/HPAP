@@ -65,6 +65,24 @@ const AdminContextProvider = (props) => {
         headers: { aToken },
     });
     };
+    const updateDoctorDepartment = async (id, department) => {
+  const res = await fetch(`${backendUrl}/api/admin/update-doctor-department/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      aToken,
+    },
+    body: JSON.stringify({ department }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || 'Failed to update doctor');
+  }
+
+  return data.doctor;
+};
 
     // Function to change doctor availablity using API
     const changeAvailability = async (docId) => {
@@ -188,6 +206,7 @@ const AdminContextProvider = (props) => {
             doctors,
             getAllDoctors,
             deleteDoctor,
+            updateDoctorDepartment,
             deleteDepartment,
             changeAvailability,
             departments, getAllDepartments,

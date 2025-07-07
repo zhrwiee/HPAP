@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAppointmentsToday,loginAdmin, appointmentsAdmin,deleteDoctor, getAllPatients,appointmentCancel,updateDepartment, deleteDepartment,addDoctor, allDoctors,allDepartments,addDepartment, adminDashboard ,deletePatient} from '../controllers/adminController.js';
+import { getAppointmentsToday,loginAdmin, updateDoctorDepartment,appointmentsAdmin,deleteDoctor, getAllPatients,appointmentCancel,updateDepartment, deleteDepartment,addDoctor, allDoctors,allDepartments,addDepartment, adminDashboard ,deletePatient} from '../controllers/adminController.js';
 import { changeAvailablity } from '../controllers/doctorController.js';
 import authAdmin from '../middleware/authAdmin.js';
 import upload from '../middleware/multer.js';
@@ -9,6 +9,7 @@ adminRouter.post("/login", loginAdmin)
 // adminRouter.get("/update-department", upload.single('image'), authAdmin, updateDepartment)
 adminRouter.post("/update-department/:id", upload.single('image'), authAdmin, updateDepartment)
 adminRouter.post("/add-doctor", authAdmin, upload.single('image'), addDoctor)
+adminRouter.put('/doctors/:id/department', authAdmin, updateDoctorDepartment);
 adminRouter.get("/all-departments", authAdmin, allDepartments)
 adminRouter.get("/appointments-today", authAdmin, getAppointmentsToday)
 adminRouter.get('/get-all-patients', authAdmin, getAllPatients);

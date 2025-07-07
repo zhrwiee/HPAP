@@ -197,6 +197,32 @@ const addDoctor = async (req, res) => {
   }
 };
 
+const updateDoctorDepartment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { department } = req.body;
+
+    if (!department) {
+      return res.status(400).json({ success: false, message: "Department is required" });
+    }
+
+    const updatedDoctor = await doctorModel.findByIdAndUpdate(
+      id,
+      { departmentname: department },
+      { new: true }
+    );
+
+    if (!updatedDoctor) {
+      return res.status(404).json({ success: false, message: "Doctor not found" });
+    }
+
+    res.json({ success: true, message: "Doctor department updated", doctor: updatedDoctor });
+  } catch (error) {
+    console.error("Update doctor department error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 
 
 // api to get all department list for admin panel
@@ -361,6 +387,7 @@ export {
     getAllPatients,
     addDepartment,
     allDoctors,
+    updateDoctorDepartment,
     deleteDoctor,
     getAppointmentsToday,
     adminDashboard

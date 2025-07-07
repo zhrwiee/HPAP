@@ -3,9 +3,18 @@ import { AdminContext } from '../../context/AdminContext';
 import { toast } from 'react-toastify';
 
 const DoctorsList = () => {
-  const { doctors, aToken, getAllDoctors, deleteDoctor } = useContext(AdminContext);
+  const {
+    doctors,
+    aToken,
+    getAllDoctors,
+    deleteDoctor,
+    updateDoctorDepartment, // <-- Make sure this exists in AdminContext
+    departments // <-- Also make sure this is loaded from backend
+  } = useContext(AdminContext);
 
-  const [confirmId, setConfirmId] = useState(null); // ID of doctor to confirm delete
+  const [confirmId, setConfirmId] = useState(null);         // For delete confirmation
+  const [editDoctor, setEditDoctor] = useState(null);       // For editing department
+  const [newDept, setNewDept] = useState('');               // Selected department
 
   useEffect(() => {
     if (aToken) getAllDoctors();
@@ -19,6 +28,19 @@ const DoctorsList = () => {
       getAllDoctors();
     } catch (err) {
       toast.error("Failed to delete doctor");
+    }
+  };
+
+  const handleEditSubmit = async () => {
+    try {
+      if (!newDept) return toast.error("Please select a department");
+      await updateDoctorDepartment(editDoctor._id, newDept);
+      toast.success("Department updated");
+      setEditDoctor(null);
+      setNewDept('');
+      getAllDoctors();
+    } catch (err) {
+      toast.error("Failed to update department");
     }
   };
 
@@ -37,18 +59,26 @@ const DoctorsList = () => {
             <div className='p-4 text-center'>
               <p className='text-[#262626] text-lg font-medium'>{item.name}</p>
               <p className='text-[#5C5C5C] text-sm'>{item.departmentname}</p>
-              <button
-                onClick={() => setConfirmId(item._id)}
-                className='mt-3 bg-red-500 text-white px-4 py-1 rounded text-sm hover:bg-red-600'
-              >
-                Delete
-              </button>
+              <div className='flex justify-center gap-2 mt-3'>
+                <button
+                  onClick={() => setEditDoctor(item)}
+                  className='bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600'
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => setConfirmId(item._id)}
+                  className='bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600'
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Modal */}
+      {/* Delete Confirmation Modal */}
       {confirmId && (
         <div className='fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50'>
           <div className='bg-white rounded-lg p-6 w-80 text-center shadow-xl'>
@@ -63,6 +93,45 @@ const DoctorsList = () => {
               </button>
               <button
                 onClick={() => setConfirmId(null)}
+                className='bg-gray-200 text-gray-800 px-4 py-1 rounded hover:bg-gray-300'
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Department Modal */}
+      {editDoctor && (
+        <div className='fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50'>
+          <div className='bg-white rounded-lg p-6 w-96 text-center shadow-xl'>
+            <h2 className='text-lg font-semibold mb-4 text-blue-600'>Edit Department</h2>
+            <p className='mb-2 text-sm'>Doctor: <strong>{editDoctor.name}</strong></p>
+
+            <select
+              value={newDept}
+              onChange={(e) => setNewDept(e.target.value)}
+              className='w-full border p-2 rounded mb-4 text-sm'
+            >
+              <option value="">Select Department</option>
+              {departments.map((dept, i) => (
+                <option key={i} value={dept.name}>{dept.name}</option>
+              ))}
+            </select>
+
+            <div className='flex justify-center gap-4'>
+              <button
+                onClick={handleEditSubmit}
+                className='bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600'
+              >
+                Save
+              </button>
+              <button
+                onClick={() => {
+                  setEditDoctor(null);
+                  setNewDept('');
+                }}
                 className='bg-gray-200 text-gray-800 px-4 py-1 rounded hover:bg-gray-300'
               >
                 Cancel
