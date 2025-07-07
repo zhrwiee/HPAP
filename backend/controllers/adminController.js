@@ -229,19 +229,25 @@ const updateDoctorDepartment = async (req, res) => {
 const allDepartments = async (req, res) => {
   try {
     const departments = await departmentModel.find({});
-    const doctors = await doctorModel.find({});
-
-    res.json({
-      success: true,
-      departments,
-      doctors,
-    });
+    res.json({ success: true, departments });
   } catch (error) {
-    console.error("Error fetching departments and doctors:", error);
+    console.error("Error fetching departments:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+// API to get all departments for doctor list
 
+const allDepartmentsDoctor = async (req, res) => {
+  try {
+    // Get unique department names from doctors
+    const departments = await doctorModel.distinct("departmentname");
+
+    res.json({ success: true, departments });
+  } catch (error) {
+    console.error("Error fetching departments:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 const deleteDepartment = async (req, res) => {
   try {
@@ -390,6 +396,7 @@ export {
     updateDepartment,
     deleteDepartment,
     allDepartments,
+    allDepartmentsDoctor,
     deletePatient,
     getAllPatients,
     addDepartment,

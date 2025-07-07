@@ -43,6 +43,23 @@ const AdminContextProvider = (props) => {
     if (res.data.success) setPatients(res.data.data);
     };
 
+        const getAllDepartmentsDoctor = async () => {
+    try {
+        const { data } = await axios.get(`${backendUrl}/api/admin/all-doctors-departments`, {
+        headers: { aToken }
+        });
+
+        if (data.success) {
+        setDepartments(data.departments); // should be the array of department names
+        } else {
+        toast.error(data.message);
+        }
+    } catch (error) {
+        toast.error(error.message);
+    }
+    };
+
+
     const getAllDepartments = async () => {
         try {
             const { data } = await axios.get(`${backendUrl}/api/admin/all-departments`, {
@@ -216,6 +233,7 @@ const AdminContextProvider = (props) => {
             getAppointmentsToday,
             getAllPatients,
             cancelAppointment,
+            getAllDepartmentsDoctor,
             deletePatient,
             dashData,
             patients,

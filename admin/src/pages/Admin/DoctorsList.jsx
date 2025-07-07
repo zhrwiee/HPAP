@@ -20,7 +20,7 @@ const DoctorsList = () => {
   useEffect(() => {
     if (aToken) {
       getAllDoctors();
-      getAllDepartments(); // ✅ Ensure department list loads
+      getAllDepartmentsDoctor(); // ✅ Ensure department list loads
     }
   }, [aToken]);
 
