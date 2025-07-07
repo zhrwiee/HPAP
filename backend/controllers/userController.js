@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import validator from "validator";
 import userModel from "../models/userModel.js";
 import doctorModel from "../models/doctorModel.js";
-import HolidayModel from "../models/HolidayModel.js";
+import HolidayModel from "../models/holidayModel.js";
 import healthRecordModel from "../models/healthRecordsModel.js";
 // import HealthRecord from '../models/healthRecordModel.js';
 import departmentModel from "../models/DepartmentModel.js";
