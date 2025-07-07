@@ -98,10 +98,6 @@ const appointmentCancel = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Appointment not found' });
     }
 
-    if (appointment.docId.toString() !== docId.toString()) {
-      return res.status(403).json({ success: false, message: 'Unauthorized doctor' });
-    }
-
     appointment.cancelled = true;
     await appointment.save();
 
