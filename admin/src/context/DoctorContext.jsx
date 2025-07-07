@@ -102,11 +102,10 @@ const DoctorContextProvider = (props) => {
         }
         };
     // Function to cancel doctor appointment using API
-        const cancelAppointment = async (appointmentId, docId) => {
+        const cancelAppointment = async (appointmentId) => {
             try {
                 const { data } = await axios.post(`${backendUrl}/api/doctor/cancel-appointment`, {
-                appointmentId,
-                docId,
+                    appointmentId
                 }, {
                 headers: { dToken },
                 });
