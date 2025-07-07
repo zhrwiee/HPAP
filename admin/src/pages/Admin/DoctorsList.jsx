@@ -8,39 +8,43 @@ const DoctorsList = () => {
     aToken,
     getAllDoctors,
     deleteDoctor,
-    updateDoctorDepartment, // <-- Make sure this exists in AdminContext
-    departments // <-- Also make sure this is loaded from backend
+    updateDoctorDepartment,
+    getAllDepartments,
+    departments,
   } = useContext(AdminContext);
 
-  const [confirmId, setConfirmId] = useState(null);         // For delete confirmation
-  const [editDoctor, setEditDoctor] = useState(null);       // For editing department
-  const [newDept, setNewDept] = useState('');               // Selected department
+  const [confirmId, setConfirmId] = useState(null);
+  const [editDoctor, setEditDoctor] = useState(null);
+  const [newDept, setNewDept] = useState('');
 
   useEffect(() => {
-    if (aToken) getAllDoctors();
+    if (aToken) {
+      getAllDoctors();
+      getAllDepartments(); // ✅ Ensure department list loads
+    }
   }, [aToken]);
 
   const handleDelete = async () => {
     try {
       await deleteDoctor(confirmId);
-      toast.success("Doctor deleted");
+      toast.success('Doctor deleted');
       setConfirmId(null);
-      getAllDoctors();
+      getAllDoctors(); // Refresh
     } catch (err) {
-      toast.error("Failed to delete doctor");
+      toast.error('Failed to delete doctor');
     }
   };
 
   const handleEditSubmit = async () => {
     try {
-      if (!newDept) return toast.error("Please select a department");
+      if (!newDept) return toast.error('Please select a department');
       await updateDoctorDepartment(editDoctor._id, newDept);
-      toast.success("Department updated");
+      toast.success('Department updated');
       setEditDoctor(null);
       setNewDept('');
-      getAllDoctors();
+      getAllDoctors(); // Refresh
     } catch (err) {
-      toast.error("Failed to update department");
+      toast.error('Failed to update department');
     }
   };
 
@@ -50,7 +54,10 @@ const DoctorsList = () => {
 
       <div className='w-full flex flex-wrap gap-4 pt-5 gap-y-6'>
         {doctors.map((item) => (
-          <div key={item._id} className='border border-[#C9D8FF] rounded-xl max-w-56 overflow-hidden group'>
+          <div
+            key={item._id}
+            className='border border-[#C9D8FF] rounded-xl max-w-56 overflow-hidden group'
+          >
             <img
               className='bg-[#EAEFFF] group-hover:bg-primary transition-all duration-500 w-full h-[100px] object-contain p-2'
               src={item.image}
@@ -61,7 +68,10 @@ const DoctorsList = () => {
               <p className='text-[#5C5C5C] text-sm'>{item.departmentname}</p>
               <div className='flex justify-center gap-2 mt-3'>
                 <button
-                  onClick={() => setEditDoctor(item)}
+                  onClick={() => {
+                    setEditDoctor(item);
+                    setNewDept(item.departmentname); // ✅ Pre-fill current dept
+                  }}
                   className='bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600'
                 >
                   Edit
@@ -107,16 +117,20 @@ const DoctorsList = () => {
         <div className='fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50'>
           <div className='bg-white rounded-lg p-6 w-96 text-center shadow-xl'>
             <h2 className='text-lg font-semibold mb-4 text-blue-600'>Edit Department</h2>
-            <p className='mb-2 text-sm'>Doctor: <strong>{editDoctor.name}</strong></p>
+            <p className='mb-2 text-sm'>
+              Doctor: <strong>{editDoctor.name}</strong>
+            </p>
 
             <select
               value={newDept}
               onChange={(e) => setNewDept(e.target.value)}
               className='w-full border p-2 rounded mb-4 text-sm'
             >
-              <option value="">Select Department</option>
+              <option value=''>Select Department</option>
               {departments.map((dept, i) => (
-                <option key={i} value={dept.name}>{dept.name}</option>
+                <option key={i} value={dept.name}>
+                  {dept.name}
+                </option>
               ))}
             </select>
 
