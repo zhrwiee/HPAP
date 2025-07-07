@@ -28,19 +28,22 @@ const loginAdmin = async (req, res) => {
 
 }
 
+
 // API to get all appointments list
 const appointmentsAdmin = async (req, res) => {
-    try {
+  try {
+    const appointments = await appointmentModel.find({})
+      .sort({ slotDate: -1, slotTime: -1 }) // Latest first
+      .populate('userId'); // Optional: if you're not already getting user data here
 
-        const appointments = await appointmentModel.find({})
-        res.json({ success: true, appointments })
+    res.json({ success: true, appointments });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
 
-    } catch (error) {
-        console.log(error)
-        res.json({ success: false, message: error.message })
-    }
 
-}
 
 // API for appointment cancellation
 const appointmentCancel = async (req, res) => {
@@ -254,23 +257,74 @@ const adminDashboard = async (req, res) => {
   try {
     const doctors = await doctorModel.find({});
     const users = await userModel.find({});
-    const appointments = await appointmentModel.find({});
-    const departments = await departmentModel.find({});
+    const appointments = await appointmentModel.find({}).sort({ date: -1 });
+
+    // Fix missing date fields by parsing slotDate and slotTime
+    appointments.forEach(app => {
+      if (!app.date && app.slotDate && app.slotTime) {
+        const [day, month, year] = app.slotDate.split('_').map(Number);
+        const dateString = `${month}/${day}/${year} ${app.slotTime}`;
+        app.date = new Date(dateString).getTime();
+      }
+    });
+
+    // Date boundaries
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayTimestamp = today.getTime();
+
+    const past7Start = new Date(today);
+    past7Start.setDate(today.getDate() - 6);
+    past7Start.setHours(0, 0, 0, 0);
+    const past7Timestamp = past7Start.getTime();
+
+    // Latest appointment (not cancelled)
+    const latest = appointments.find(app => !app.cancelled);
+
+    let latestAppointment = null;
+    if (latest && latest.userId) {
+      const user = await userModel.findById(latest.userId).lean();
+      latestAppointment = {
+        ...latest._doc,
+        userData: user
+          ? {
+              _id: user._id,
+              name: user.name,
+              image: user.image,
+            }
+          : {},
+      };
+    }
+
+    // Upcoming appointments count
+    const upcomingAppointments = appointments.filter(
+      app => !app.cancelled && app.date >= todayTimestamp
+    ).length;
+
+    // Past 7 days appointments
+    const past7Appointments = appointments.filter(
+      app => app.date >= past7Timestamp && !app.cancelled
+    );
+
+    const avgPerDay = +(past7Appointments.length / 7).toFixed(1);
 
     const dashData = {
-      doctors: doctors.length,
       appointments: appointments.length,
       patients: users.length,
-      departments: departments.length,
-      latestAppointments: appointments.reverse().slice(0, 5), // limit 5 here for efficiency
+      totalDoctors: doctors.length,
+      availableDoctors: doctors.filter(d => d.isAvailable).length,
+      latestAppointment,
+      upcomingAppointments,
+      avgPerDay,
     };
 
     res.json({ success: true, dashData });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error("Dashboard Error:", error.message);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 export {
     loginAdmin,

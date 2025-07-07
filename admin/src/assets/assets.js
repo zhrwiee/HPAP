@@ -13,12 +13,20 @@ import people_icon from './people_icon.svg'
 import upload_area from './upload_area.svg'
 import list_icon from './list_icon.svg'
 import tick_icon from './tick_icon.svg'
+import stats_icon from './stats_icon.svg'
+import analytics_icon from './analytics_icon.svg'
+import upcoming_icon from './upcoming_icon.svg'
+import clock_icon from './clock_icon.svg'
 import appointments_icon from './appointments_icon.svg'
 import earning_icon from './earning_icon.svg'
 import patients_icon from './patients_icon.svg'
 
 export const url="https://hpap-backend.onrender.com"
 export const assets = {
+    upcoming_icon,
+    stats_icon,
+    analytics_icon,
+    clock_icon,
     add_icon,
     logo,
     patient,
