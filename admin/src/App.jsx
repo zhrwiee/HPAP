@@ -10,6 +10,7 @@ import Dashboard from './pages/Admin/Dashboard';
 import AddDepartment from './pages/Admin/AddDepartment' 
 import AllAppointments from './pages/Admin/AllAppointments';
 import AddDoctor from './pages/Admin/AddDoctor';
+import AppointmentToday from './pages/Admin/AppointmentToday';
 import DoctorsList from './pages/Admin/DoctorsList';
 import DepartmentList from './pages/Admin/DepartmentList';
 import PatientList from './pages/Admin/PatientList';
@@ -37,6 +38,7 @@ const App = () => {
           <Route path='/admin-dashboard' element={<Dashboard />} />
           <Route path='/all-appointments' element={<AllAppointments />} />
           <Route path='/add-department' element={<AddDepartment />} />
+          <Route path='/appointments-today' element={<AppointmentToday />} />
           <Route path='/all-departments' element={<DepartmentList />} />
           <Route path='/add-doctor' element={<AddDoctor />} />
           <Route path='/patients' element={<PatientList />} />

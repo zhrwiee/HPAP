@@ -147,7 +147,23 @@ const AdminContextProvider = (props) => {
   }
 };
 
+    const getAppointmentsToday = async () => {
+  try {
+    const { data } = await axios.get(`${backendUrl}/api/admin/appointments-today`, {
+      headers: { aToken }
+    });
 
+    if (data.success) {
+      return data.appointments;
+    } else {
+      toast.error(data.message);
+      return [];
+    }
+  } catch (error) {
+    toast.error(error.message);
+    return [];
+  }
+};
     // Getting Admin Dashboard data from Database using API
     const getDashData = async () => {
         try {
@@ -178,6 +194,7 @@ const AdminContextProvider = (props) => {
             appointments,
             getAllAppointments,
             getDashData,
+            getAppointmentsToday,
             getAllPatients,
             cancelAppointment,
             deletePatient,

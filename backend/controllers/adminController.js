@@ -252,6 +252,29 @@ const allDoctors = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+const getAppointmentsToday = async (req, res) => {
+  try {
+    const today = new Date();
+    const formatted = `${today.getDate()}_${today.getMonth() + 1}_${today.getFullYear()}`;
+
+    const appointments = await appointmentModel
+      .find({ slotDate: formatted })
+      .sort({ slotTime: 1 })
+      .populate('userId', 'name image'); // Optional if you use `userData`
+
+    // In case userData is not set, fall back to userId
+    const enrichedAppointments = appointments.map(a => ({
+      ...a._doc,
+      userData: a.userData || a.userId,
+    }));
+
+    res.json({ success: true, appointments: enrichedAppointments });
+  } catch (error) {
+    console.error('Error fetching today appointments:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 // API to get dashboard data for admin panel
 const adminDashboard = async (req, res) => {
   try {
@@ -339,5 +362,6 @@ export {
     addDepartment,
     allDoctors,
     deleteDoctor,
+    getAppointmentsToday,
     adminDashboard
 }
