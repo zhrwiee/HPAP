@@ -103,6 +103,46 @@ const AdminContextProvider = (props) => {
   return data.doctor;
 };
 
+    // AdminContext.js
+
+const getHolidays = async () => {
+  try {
+    const { data } = await axios.get(`${backendUrl}/api/admin/holidays`, {
+      headers: { aToken },
+    });
+    return data.holidays;
+  } catch (error) {
+    console.error("Fetch holidays error:", error.message);
+    return [];
+  }
+};
+
+const addHoliday = async (holiday) => {
+  try {
+    const { data } = await axios.post(`${backendUrl}/api/admin/add-holiday`, holiday, {
+      headers: { aToken },
+    });
+    toast.success(data.message);
+    return true;
+  } catch (error) {
+    toast.error(error.response?.data?.message || error.message);
+    return false;
+  }
+};
+
+const deleteHoliday = async (holidayId) => {
+  try {
+    const { data } = await axios.delete(`${backendUrl}/api/admin/holiday/${holidayId}`, {
+      headers: { aToken },
+    });
+    toast.success(data.message);
+    return true;
+  } catch (error) {
+    toast.error(error.response?.data?.message || error.message);
+    return false;
+  }
+};
+
 
     // Function to change doctor availablity using API
     const changeAvailability = async (docId) => {
@@ -236,6 +276,9 @@ const AdminContextProvider = (props) => {
             getAppointmentsToday,
             getAllPatients,
             cancelAppointment,
+            addHoliday,
+            getHolidays,
+            deleteHoliday,
             getAllDepartmentsDoctor,
             deletePatient,
             dashData,

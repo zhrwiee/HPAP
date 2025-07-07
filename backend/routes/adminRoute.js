@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAppointmentsToday,loginAdmin,allDepartmentsDoctor, updateDoctorDepartment,appointmentsAdmin,deleteDoctor, getAllPatients,appointmentCancel,updateDepartment, deleteDepartment,addDoctor, allDoctors,allDepartments,addDepartment, adminDashboard ,deletePatient} from '../controllers/adminController.js';
+import { getAppointmentsToday,addHoliday,getHolidays,deleteHoliday,loginAdmin,allDepartmentsDoctor, updateDoctorDepartment,appointmentsAdmin,deleteDoctor, getAllPatients,appointmentCancel,updateDepartment, deleteDepartment,addDoctor, allDoctors,allDepartments,addDepartment, adminDashboard ,deletePatient} from '../controllers/adminController.js';
 import { changeAvailablity } from '../controllers/doctorController.js';
 import authAdmin from '../middleware/authAdmin.js';
 import upload from '../middleware/multer.js';
@@ -7,6 +7,9 @@ const adminRouter = express.Router();
 
 adminRouter.post("/login", loginAdmin)
 // adminRouter.get("/update-department", upload.single('image'), authAdmin, updateDepartment)
+adminRouter.post("/add-holiday", authAdmin, addHoliday);
+adminRouter.get("/holidays", authAdmin, getHolidays);
+adminRouter.delete("/holiday/:id", authAdmin, deleteHoliday);
 adminRouter.post("/update-department/:id", upload.single('image'), authAdmin, updateDepartment)
 adminRouter.post("/add-doctor", authAdmin, upload.single('image'), addDoctor)
 adminRouter.put('/doctors/:id/department', authAdmin, updateDoctorDepartment);

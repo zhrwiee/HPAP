@@ -115,21 +115,53 @@ const DoctorAppointments = () => {
                   appts.map((item, index) => (
                     <div
                       key={index}
-                      className='sm:grid sm:grid-cols-[2fr_2fr_1fr_0.5fr] px-6 py-3 items-center text-gray-600 hover:bg-gray-50'
+                      className='grid grid-cols-1 px-6 py-4 border-t bg-white hover:bg-gray-50 text-sm text-gray-700'
                     >
-                      <div className='text-sm'>
-                        {item.symptoms.join(', ')}
+                      <div className='mb-1'>
+                        <strong>Date & Time:</strong> {slotDateFormat(item.slotDate)}, {item.slotTime}
+                      </div>
+
+                      <div className='mb-1'>
+                        <strong>Symptoms:</strong> {item.symptoms.join(', ')}
                         {item.otherSymptom && `, ${item.otherSymptom}`}
                       </div>
-                      <p>{slotDateFormat(item.slotDate)}, {item.slotTime}</p>
-                      <div className='flex items-center gap-2'>
+
+                      <div className='mb-1'>
+                        <strong>Referral Letter:</strong>{' '}
+                        {item.referralLetter ? (
+                          <a
+                            href={item.referralLetter}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='text-blue-500 underline'
+                          >
+                            View
+                          </a>
+                        ) : (
+                          <span className='text-gray-500'>Not Provided</span>
+                        )}
+                      </div>
+
+                      <div className='mb-1'>
+                        <strong>Status:</strong>{' '}
+                        {item.cancelled ? (
+                          <span className='text-red-500 font-medium'>Cancelled</span>
+                        ) : item.isCompleted ? (
+                          <span className='text-green-600 font-medium'>Completed</span>
+                        ) : (
+                          <span className='text-yellow-600 font-medium'>Pending</span>
+                        )}
+                      </div>
+
+                      <div className='flex items-center gap-3 mt-2'>
                         {!item.cancelled && !item.isCompleted && (
                           <>
                             <img
                               onClick={() => cancelAppointment(item._id)}
                               src={assets.cancel_icon}
-                              alt="Cancel"
+                              alt='Cancel'
                               className='w-6 cursor-pointer hover:scale-110 transition-transform'
+                              title='Cancel Appointment'
                             />
                             <img
                               onClick={() =>
@@ -138,19 +170,13 @@ const DoctorAppointments = () => {
                                 })
                               }
                               src={assets.tick_icon}
-                              alt="Complete"
+                              alt='Complete'
                               className='w-6 cursor-pointer hover:scale-110 transition-transform'
+                              title='Mark as Completed'
                             />
                           </>
                         )}
-                        {item.cancelled && (
-                          <span className='text-red-500 text-xs font-medium'>Cancelled</span>
-                        )}
-                        {item.isCompleted && (
-                          <span className='text-green-500 text-xs font-medium'>Completed</span>
-                        )}
                       </div>
-                      <p className='text-right pr-2 text-gray-400'>—</p>
                     </div>
                   ))}
               </div>

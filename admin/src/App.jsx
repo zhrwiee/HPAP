@@ -13,6 +13,7 @@ import AddDoctor from './pages/Admin/AddDoctor';
 import AppointmentToday from './pages/Admin/AppointmentToday';
 import DoctorsList from './pages/Admin/DoctorsList';
 import DepartmentList from './pages/Admin/DepartmentList';
+import HolidayCalendar from './pages/Admin/HolidayCalendar';
 import PatientList from './pages/Admin/PatientList';
 import Login from './pages/Login';
 import DoctorAppointments from './pages/Doctor/DoctorAppointments';
@@ -36,6 +37,7 @@ const App = () => {
           <Route path='/' element={<></>} />
  
           <Route path='/admin-dashboard' element={<Dashboard />} />
+          <Route path='/holiday-calendar' element={<HolidayCalendar />} />
           <Route path='/all-appointments' element={<AllAppointments />} />
           <Route path='/add-department' element={<AddDepartment />} />
           <Route path='/appointments-today' element={<AppointmentToday />} />

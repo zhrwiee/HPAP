@@ -52,6 +52,11 @@ const Sidebar = () => {
             <img className='min-w-5' src={assets.patients_icon} alt='Patients' width={24} />
             <p className='hidden md:block'>Patients</p>
           </NavLink>
+          
+          <NavLink to='/holiday-calendar' className={({ isActive }) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`}>
+            <img className='w-5 h-5 object-contain' src={assets.holiday_calendar} alt='Holiday Calendar' />
+            <p className='hidden md:block'>Holiday Calendar</p>
+          </NavLink>
 
         </ul>
       )}

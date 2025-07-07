@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import appointmentModel from "../models/appointmentModel.js";
 import doctorModel from "../models/doctorModel.js";
 import departmentModel from "../models/DepartmentModel.js";
+import HolidayModel from "../models/holidayModel.js";
 import bcrypt from "bcrypt";
 import validator from "validator";
 import { v2 as cloudinary } from "cloudinary";
@@ -29,6 +30,37 @@ const loginAdmin = async (req, res) => {
 }
 
 
+const addHoliday = async (req, res) => {
+  try {
+    const { title, date, isPublic, description } = req.body;
+    const exists = await HolidayModel.findOne({ date });
+    if (exists) return res.status(400).json({ success: false, message: "Holiday already exists" });
+
+    const holiday = new HolidayModel({ title, date, isPublic, description });
+    await holiday.save();
+    res.json({ success: true, message: "Holiday added", holiday });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+const getHolidays = async (req, res) => {
+  try {
+    const holidays = await HolidayModel.find().sort({ date: 1 });
+    res.json({ success: true, holidays });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+const deleteHoliday = async (req, res) => {
+  try {
+    await HolidayModel.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: "Holiday removed" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
 // API to get all appointments list
 const appointmentsAdmin = async (req, res) => {
   try {
@@ -392,6 +424,9 @@ export {
     appointmentsAdmin,
     appointmentCancel,
     addDoctor,
+    addHoliday,
+    getHolidays,
+    deleteHoliday,
     updateDepartment,
     deleteDepartment,
     allDepartments,

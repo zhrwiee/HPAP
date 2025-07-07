@@ -18,6 +18,7 @@ import stats_icon from './stats_icon.svg'
 import analytics_icon from './analytics_icon.svg'
 import upcoming_icon from './upcoming_icon.svg'
 import clock_icon from './clock_icon.svg'
+import holiday_calendar from './holiday_calendar.svg'
 import appointments_icon from './appointments_icon.svg'
 import earning_icon from './earning_icon.svg'
 import patients_icon from './patients_icon.svg'
@@ -31,6 +32,7 @@ export const assets = {
     clock_icon,
     add_icon,
     logo,
+    holiday_calendar,
     patient,
     addDepart_Icon,
     admin_logo,
