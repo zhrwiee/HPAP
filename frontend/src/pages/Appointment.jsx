@@ -1,18 +1,20 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AppContext } from '../Context/AppContext';
-import DatePicker from 'react-datepicker'; // ⬅️ add this at the top
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const Appointment = () => {
   const { backendUrl, token, userData } = useContext(AppContext);
   const navigate = useNavigate();
   const location = useLocation();
   const { department, icon } = location.state || {};
+  const [holidays, setHolidays] = useState([]);
 
   const [form, setForm] = useState({
-    date: '',
+    date: null,
     time: '',
     referral: null,
     symptoms: [],
@@ -20,7 +22,6 @@ const Appointment = () => {
   });
 
   const [unavailableSlots, setUnavailableSlots] = useState([]);
-  const [holidays, setHolidays] = useState([]);
 
   const timeSlots = [
     '08:00 AM', '08:30 AM', '09:00 AM', '09:30 AM',
@@ -33,48 +34,25 @@ const Appointment = () => {
   const maxDate = new Date();
   maxDate.setDate(today.getDate() + 30);
 
-  useEffect(() => {
-    fetchHolidays();
-  }, []);
+  const handleDateChange = (date) => {
+    if (!date) return;
 
-  useEffect(() => {
-    checkSlotAvailability();
-  }, [form.date]);
+    const day = date.getDay();
+    const formatted = date.toISOString().split('T')[0];
 
-  const fetchHolidays = async () => {
-    try {
-      const { data } = await axios.get(`${backendUrl}/api/user/get-holidays`);
-      if (data.success && Array.isArray(data.holidays)) {
-        const formatted = data.holidays.map(h => {
-          const [d, m, y] = h.date.split('_');
-          return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`; // "YYYY-MM-DD"
-        });
-        setHolidays(formatted);
-      }
-    } catch (err) {
-      console.error("Error fetching holidays:", err);
-    }
-  };
+    const isHoliday = holidays.some(h => h.toISOString().split('T')[0] === formatted);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-
-    if (name === 'date') {
-      const selectedDate = new Date(value);
-      const day = selectedDate.getDay();
-
-      if (day === 0 || day === 6) {
-        toast.error('Appointments are only available Monday to Friday');
-        return;
-      }
-
-      if (holidays.includes(value)) {
-        toast.error('This date is a holiday. Please select another date.');
-        return;
-      }
+    if (day === 0 || day === 6) {
+      toast.error('Appointments are only available Monday to Friday');
+      return;
     }
 
-    setForm(prev => ({ ...prev, [name]: value }));
+    if (isHoliday) {
+      toast.error('This date is a holiday. Please select another date.');
+      return;
+    }
+
+    setForm(prev => ({ ...prev, date }));
   };
 
   const handleFileChange = (e) => {
@@ -85,10 +63,25 @@ const Appointment = () => {
     setForm(prev => ({ ...prev, time: slot }));
   };
 
+const fetchHolidays = async () => {
+  try {
+    const { data } = await axios.get(`${backendUrl}/api/user/get-holidays`);
+    if (data.success && Array.isArray(data.holidays)) {
+      const holidayDates = data.holidays.map(h => {
+        const [d, m, y] = h.date.split('_');
+        return new Date(`${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`);
+      });
+      setHolidays(holidayDates);
+    }
+  } catch (err) {
+    console.error("Error fetching holidays:", err);
+  }
+};
+
   const checkSlotAvailability = async () => {
     if (!form.date || !department) return;
 
-    const [year, month, day] = form.date.split('-');
+    const [year, month, day] = form.date.toISOString().split('T')[0].split('-');
     const slotDate = `${parseInt(day)}_${parseInt(month)}_${year}`;
 
     try {
@@ -103,6 +96,14 @@ const Appointment = () => {
     }
   };
 
+  useEffect(() => {
+    fetchHolidays();
+  }, []);
+
+  useEffect(() => {
+    checkSlotAvailability();
+  }, [form.date]);
+
   const bookAppointment = async () => {
     if (!token) {
       toast.warning('Login to book appointment');
@@ -114,7 +115,7 @@ const Appointment = () => {
       return;
     }
 
-    const [year, month, day] = form.date.split('-');
+    const [year, month, day] = form.date.toISOString().split('T')[0].split('-');
     const slotDate = `${parseInt(day)}_${parseInt(month)}_${year}`;
     const slotTime = form.time;
 
@@ -125,7 +126,9 @@ const Appointment = () => {
     formData.append('slotTime', slotTime);
     formData.append('otherSymptom', form.otherSymptom.trim());
 
-    form.symptoms.forEach(s => formData.append('symptoms[]', s));
+    form.symptoms.forEach(s => {
+      formData.append('symptoms[]', s);
+    });
 
     if (form.referral) {
       formData.append('referralLetter', form.referral);
@@ -146,7 +149,7 @@ const Appointment = () => {
       if (data.success) {
         toast.success(data.message);
         setForm({
-          date: '',
+          date: null,
           time: '',
           referral: null,
           symptoms: [],
@@ -178,45 +181,24 @@ const Appointment = () => {
         {icon && <img src={icon} alt="Department Icon" className="mx-auto mt-2 w-12 h-12" />}
       </div>
 
-    {/* Date Picker */}
-    <div className="mb-5">
-      <label className="block text-sm font-medium mb-1">Appointment Date</label>
-      <DatePicker
-        selected={form.date ? new Date(form.date) : null}
-        onChange={(date) => {
-          if (!date) return;
+      {/* Date Picker */}
+      <div className="mb-5">
+        <label className="block text-sm font-medium mb-1">Appointment Date</label>
+        <DatePicker
+          selected={form.date}
+          onChange={handleDateChange}
+          minDate={today}
+          maxDate={maxDate}
+          placeholderText="Select a date"
+          className="w-full border px-3 py-2 rounded"
+          filterDate={(date) => {
+            const day = date.getDay();
+            const isHoliday = holidays.some(h => h.toDateString() === date.toDateString());
+            return day !== 0 && day !== 6 && !isHoliday;
+          }}
 
-          const iso = date.toISOString().split('T')[0];
-          const day = date.getDay();
-
-          if (day === 0 || day === 6) {
-            toast.error('Appointments are only available Monday to Friday');
-            return;
-          }
-
-          if (holidays.includes(iso)) {
-            toast.error('This date is a holiday. Please select another.');
-            return;
-          }
-
-          setForm(prev => ({
-            ...prev,
-            date: iso,
-            time: '' // reset time if date changes
-          }));
-        }}
-        minDate={today}
-        maxDate={maxDate}
-        filterDate={(date) => {
-          const day = date.getDay();
-          const iso = date.toISOString().split('T')[0];
-          return day !== 0 && day !== 6 && !holidays.includes(iso); // Disable weekends and holidays
-        }}
-        placeholderText="Select appointment date"
-        className="w-full border px-3 py-2 rounded"
-        dateFormat="yyyy-MM-dd"
-      />
-    </div>
+        />
+      </div>
 
       {/* Time Slots */}
       <div className="mb-5">
@@ -286,7 +268,7 @@ const Appointment = () => {
             name="otherSymptom"
             placeholder="Please specify"
             value={form.otherSymptom}
-            onChange={handleInputChange}
+            onChange={(e) => setForm(prev => ({ ...prev, otherSymptom: e.target.value }))}
             className="w-full mt-2 border px-3 py-2 rounded"
           />
         )}
