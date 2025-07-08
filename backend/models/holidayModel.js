@@ -1,13 +1,32 @@
+// models/HolidayModel.js
+
 import mongoose from "mongoose";
 
 const holidaySchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  date: {type: String,required: true,unique: true,match: [/^\d{1,2}_\d{1,2}_\d{4}$/, 'Date must be in D_M_YYYY format'], // optional
+  title: {
+    type: String,
+    required: true,
   },
-  isPublic: { type: Boolean, default: false },
-  description: { type: String },
-  createdAt: { type: Date, default: Date.now },
+  date: {
+    type: String,
+    required: true,
+    unique: true, // Format: "DD_MM_YYYY"
+  },
+  isPublic: {
+    type: Boolean,
+    default: false,
+  },
+  description: {
+    type: String,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-const HolidayModel = mongoose.models.holiday || mongoose.model("holiday", holidaySchema);
+// Use existing model if it exists to avoid OverwriteModelError
+const HolidayModel =
+  mongoose.models.Holiday || mongoose.model("Holiday", holidaySchema);
+
 export default HolidayModel;
