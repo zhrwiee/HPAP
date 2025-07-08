@@ -21,11 +21,11 @@ const AppContextProvider = (props) => {
   // Fetch holidays
 const fetchHolidays = async () => {
   try {
-    const { data } = await axios.get(`${backendUrl}/api/public/holidays`);
+    const { data } = await axios.get(`${backendUrl}/api/user/get-holidays`);
     if (data.success) {
-      const formattedDates = data.holidays.map(h => {
-        return new Date(h.date.trim()).toISOString().split('T')[0]; // Force into "YYYY-MM-DD"
-      });
+      const formattedDates = data.holidays.map(h =>
+        new Date(h.date.trim()).toISOString().split('T')[0] // Force into YYYY-MM-DD
+      );
       setHolidays(formattedDates);
     }
   } catch (err) {
@@ -163,7 +163,7 @@ const deleteHealthRecord = async (recordId) => {
   useEffect(() => {
     if (token) {
       loadUserProfileData();
-      fetchHolidays();
+      // fetchHolidays();
     }
   }, [token]);
 

@@ -35,7 +35,10 @@ const Appointment = () => {
   maxDate.setDate(today.getDate() + 30);
 
 const toSlotDate = (dateObj) => {
-  return dateObj.toISOString().split('T')[0]; // returns "YYYY-MM-DD"
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`; // this will always be in local time
 };
 
   const handleDateChange = (date) => {

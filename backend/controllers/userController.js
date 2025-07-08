@@ -24,7 +24,14 @@ const razorpayInstance = new razorpay({
 const getHolidays = async (req, res) => {
   try {
     const holidays = await HolidayModel.find().sort({ date: 1 });
-    res.json({ success: true, holidays });
+
+    // Convert all dates to "YYYY-MM-DD"
+    const formatted = holidays.map(h => ({
+      ...h._doc,
+      date: new Date(h.date).toISOString().split('T')[0]  // Ensures ISO format
+    }));
+
+    res.json({ success: true, holidays: formatted });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
