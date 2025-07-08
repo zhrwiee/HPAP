@@ -19,20 +19,17 @@ const AppContextProvider = (props) => {
   const [userData, setUserData] = useState(false);
 
   // Fetch holidays
-  const fetchHolidays = async () => {
+const fetchHolidays = async () => {
   try {
-    const { data } = await axios.get(`${backendUrl}/api/user/get-holidays`);
-    if (data.success && Array.isArray(data.holidays)) {
-      const formatted = data.holidays.map(h => {
-        const [d, m, y] = h.date.split('_');
-        return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
-      });
-      setHolidays(formatted);
+    const { data } = await axios.get(`${backendUrl}/api/public/holidays`);
+    if (data.success) {
+      setHolidays(data.holidays.map(h => h.date)); // Ensure date is "YYYY-MM-DD"
     }
-  } catch (error) {
-    console.error("Failed to fetch holidays:", error);
+  } catch (err) {
+    console.error("Failed to load holidays", err);
   }
 };
+
 
   // Fetch doctors
   const getDoctorsData = async () => {

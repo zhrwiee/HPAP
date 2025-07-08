@@ -34,7 +34,9 @@ const Appointment = () => {
   const maxDate = new Date();
   maxDate.setDate(today.getDate() + 30);
 
-  const toSlotDate = (dateObj) => `${dateObj.getDate()}_${dateObj.getMonth() + 1}_${dateObj.getFullYear()}`;
+const toSlotDate = (dateObj) => {
+  return dateObj.toISOString().split('T')[0]; // returns "YYYY-MM-DD"
+};
 
   const handleDateChange = (date) => {
     setForm(prev => ({ ...prev, date }));
@@ -49,16 +51,15 @@ const Appointment = () => {
   };
 
   const checkSlotAvailability = async () => {
-    if (!form.date || !department) return;
-    const slotDate = toSlotDate(form.date);
-    try {
-      const { data } = await axios.get(`${backendUrl}/api/user/check-slot?department=${department}&date=${slotDate}`);
-      if (data.success) setUnavailableSlots(data.unavailable || []);
-    } catch (error) {
-      console.error('Slot availability error:', error);
-    }
-  };
-
+  if (!form.date || !department) return;
+  const slotDate = toSlotDate(form.date); // now YYYY-MM-DD
+  try {
+    const { data } = await axios.get(`${backendUrl}/api/user/check-slot?department=${department}&date=${slotDate}`);
+    if (data.success) setUnavailableSlots(data.unavailable || []);
+  } catch (error) {
+    console.error('Slot availability error:', error);
+  }
+};
   useEffect(() => {
     checkSlotAvailability();
   }, [form.date]);
