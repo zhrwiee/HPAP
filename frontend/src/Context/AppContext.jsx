@@ -23,16 +23,18 @@ const fetchHolidays = async () => {
   try {
     const { data } = await axios.get(`${backendUrl}/api/public/holidays`);
     if (data.success) {
-      setHolidays(data.holidays.map(h => h.date)); // Ensure date is "YYYY-MM-DD"
+      const formattedDates = data.holidays.map(h => {
+        return new Date(h.date.trim()).toISOString().split('T')[0]; // Force into "YYYY-MM-DD"
+      });
+      setHolidays(formattedDates);
     }
   } catch (err) {
     console.error("Failed to load holidays", err);
   }
 };
 
-
-  // Fetch doctors
-  const getDoctorsData = async () => {
+// Fetch doctors
+const getDoctorsData = async () => {
     try {
       const { data } = await axios.get(`${backendUrl}/api/doctor/list`);
       if (data.success) {
@@ -161,6 +163,7 @@ const deleteHealthRecord = async (recordId) => {
   useEffect(() => {
     if (token) {
       loadUserProfileData();
+      fetchHolidays();
     }
   }, [token]);
 

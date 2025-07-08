@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { toast } from 'react-toastify';
@@ -11,19 +11,28 @@ const AppointmentCalendar = ({ value, onChange }) => {
   const maxDate = new Date();
   maxDate.setDate(today.getDate() + 30);
 
-  // Disable weekends and holidays
+  // Debug once holidays load
+  useEffect(() => {
+    console.log('Loaded holidays from AppContext:', holidays);
+  }, [holidays]);
+
   const isDisabled = (date) => {
-    const day = date.getDay(); // 0 = Sunday, 6 = Saturday
-    const formatted = date.toISOString().split('T')[0]; // 'YYYY-MM-DD'
-    return day === 0 || day === 6 || holidays.includes(formatted);
+    const day = date.getDay(); // Sunday = 0
+    const formatted = date.toLocaleDateString('sv-SE'); // "YYYY-MM-DD"
+    const result = day === 0 || day === 6 || holidays.includes(formatted);
+
+    console.log(`Checking date: ${formatted} | Weekend: ${day === 0 || day === 6} | Is holiday: ${holidays.includes(formatted)} | Disabled: ${result}`);
+
+    return result;
   };
 
-  // On user select
   const handleChange = (date) => {
+    const formatted = date.toLocaleDateString('sv-SE');
     if (isDisabled(date)) {
-      toast.error('This date is not available for booking.');
+      toast.error(`This date (${formatted}) is not available for booking.`);
       return;
     }
+    console.log("Selected valid date:", formatted);
     onChange(date);
   };
 
@@ -36,7 +45,7 @@ const AppointmentCalendar = ({ value, onChange }) => {
       placeholderText="Select appointment date"
       className="w-full border px-3 py-2 rounded"
       filterDate={(date) => !isDisabled(date)}
-      dateFormat="d MMMM yyyy" // Displays like "7 July 2025"
+      dateFormat="d MMMM yyyy"
     />
   );
 };
