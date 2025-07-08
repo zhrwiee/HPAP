@@ -14,8 +14,25 @@ const AppContextProvider = (props) => {
   const [doctors, setDoctors] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [HealthRecords, setHealthRecords] = useState([]);
+  const [holidays, setHolidays] = useState([]);
   const [token, setToken] = useState(localStorage.getItem('token') || '');
   const [userData, setUserData] = useState(false);
+
+  // Fetch holidays
+  const fetchHolidays = async () => {
+  try {
+    const { data } = await axios.get(`${backendUrl}/api/user/get-holidays`);
+    if (data.success && Array.isArray(data.holidays)) {
+      const formatted = data.holidays.map(h => {
+        const [d, m, y] = h.date.split('_');
+        return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+      });
+      setHolidays(formatted);
+    }
+  } catch (error) {
+    console.error("Failed to fetch holidays:", error);
+  }
+};
 
   // Fetch doctors
   const getDoctorsData = async () => {
@@ -85,23 +102,6 @@ const AppContextProvider = (props) => {
     }
   };
 
-  const getHolidays = async () => {
-    try {
-      const { data } = await axios.get(`${backendUrl}/api/user/holidays`, {
-        headers: { token }
-      });
-      if (data.success) {
-        return data.holidays;
-      } else {
-        toast.error(data.message);
-        return [];
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to load holidays');
-      return [];
-    }
-  };
 
   // Delete health record by ID
 const deleteHealthRecord = async (recordId) => {
@@ -176,12 +176,13 @@ const deleteHealthRecord = async (recordId) => {
     currencySymbol,
     backendUrl,
     token,
+    holidays,
     createHealthRecord,
     getHealthRecords,
-    getHolidays,
     deleteHealthRecord,
         setToken,
     userData,
+    fetchHolidays,
     setUserData,
     loadUserProfileData,
   };

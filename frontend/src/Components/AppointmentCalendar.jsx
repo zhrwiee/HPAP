@@ -1,31 +1,13 @@
 // components/AppointmentCalendar.jsx
 
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import axios from 'axios';
 import { toast } from 'react-toastify';
+import { AppContext } from '../Context/AppContext';
 
-const AppointmentCalendar = ({ value, onChange, backendUrl }) => {
-  const [holidays, setHolidays] = useState([]);
-
-  useEffect(() => {
-    const fetchHolidays = async () => {
-      try {
-        const { data } = await axios.get(`${backendUrl}/api/user/get-holidays`);
-        if (data.success && Array.isArray(data.holidays)) {
-          const converted = data.holidays.map(h => {
-            const [d, m, y] = h.date.split('_');
-            return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
-          });
-          setHolidays(converted);
-        }
-      } catch (err) {
-        console.error("Failed to load holidays", err);
-      }
-    };
-    fetchHolidays();
-  }, [backendUrl]);
+const AppointmentCalendar = ({ value, onChange }) => {
+  const { holidays = [] } = useContext(AppContext); // <-- Default to empty array
 
   const today = new Date();
   const maxDate = new Date();
@@ -38,7 +20,6 @@ const AppointmentCalendar = ({ value, onChange, backendUrl }) => {
   };
 
   const handleChange = (date) => {
-    const formatted = date.toISOString().split('T')[0];
     if (isDisabled(date)) {
       toast.error('This date is not available for booking.');
       return;

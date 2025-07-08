@@ -12,6 +12,7 @@ import MyProfile from './pages/Myprofile';
 import HealthRecord from './pages/HealthRecord';
 import AddHealthRecord from './pages/AddHealthRecord';
 import Login from './pages/Login';
+import AppointmentCalendar from './Components/AppointmentCalendar';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Verify from './pages/Verify';
@@ -26,6 +27,7 @@ const App = () => {
 
       <Routes>
         <Route path='/' element={<Home />} />
+        <Route path='/appointment-calendar' element={<AppointmentCalendar />} />
         <Route path='/department' element={<Department />} />
         <Route path='/doctors' element={<Doctors />} />
         <Route path='/appointment' element={<Appointment />} />
